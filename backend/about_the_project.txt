@@ -1,0 +1,5 @@
+//Problem yang gw alamai so far
+1. hbs pada authController dan otpTemplate.hbs bisa saja mengalami error karena pada authController saya menggunakan cara berbeda saat menggunakan syntax compile karena TS tidak bisa memahami jika sya langsung menggunakan .compile
+
+//Video progress
+3.21.08
