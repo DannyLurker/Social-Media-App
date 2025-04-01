@@ -21,7 +21,7 @@ export const getProfile = catchAsync((req, res, next) => __awaiter(void 0, void 
         options: { sort: { createdAt: -1 } },
     })
         .populate({
-        path: "savePosts",
+        path: "savedPosts",
         options: { sort: { createdAt: -1 } },
     });
     if (!user) {

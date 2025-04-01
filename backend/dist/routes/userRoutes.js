@@ -2,7 +2,7 @@ import express from "express";
 import { resendOtp, signUp, verifyAccount, login, logout, forgetPassword, resetPassword, changePassword, } from "../controllers/authController.js";
 import { isAuthenticated } from "../middleware/isAuthenticated.js";
 import { editProfile, followUnFollow, getMe, getProfile, suggestedUser, } from "../controllers/userController.js";
-import { upload } from "../models/multer.js";
+import { upload } from "../middleware/multer.js";
 const router = express.Router();
 // Auth Routes
 router.post("/signup", signUp);

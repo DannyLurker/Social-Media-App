@@ -1,4 +1,4 @@
-import { upload } from "../models/multer.js";
+import { upload } from "../middleware/multer.js";
 import { User } from "../models/userModel.js";
 import AppError from "../utils/appError.js";
 import catchAsync from "../utils/catchAsync.js";
@@ -16,7 +16,7 @@ export const getProfile = catchAsync(async (req, res, next) => {
       options: { sort: { createdAt: -1 } },
     })
     .populate({
-      path: "savePosts",
+      path: "savedPosts",
       options: { sort: { createdAt: -1 } },
     });
 

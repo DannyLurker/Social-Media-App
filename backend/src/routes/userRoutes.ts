@@ -17,7 +17,7 @@ import {
   getProfile,
   suggestedUser,
 } from "../controllers/userController.js";
-import { upload } from "../models/multer.js";
+import { upload } from "../middleware/multer.js";
 import { isatty } from "tty";
 
 const router = express.Router();
