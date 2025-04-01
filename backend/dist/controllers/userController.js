@@ -84,7 +84,9 @@ export const followUnFollow = catchAsync((req, res, next) => __awaiter(void 0, v
     const isFollowing = targetUser.followers.includes(loginUserId);
     if (isFollowing) {
         yield Promise.all([
-            User.updateOne({ _id: loginUserId }, { $pull: { following: targetUserId } }),
+            User.updateOne({ _id: loginUserId }, 
+            // $pull digunakan untuk menghapus elemen tertentu dari array dalam dokumen MongoDB
+            { $pull: { following: targetUserId } }),
             User.updateOne({
                 _id: targetUser,
             }, { $pull: { followers: loginUserId } }),
@@ -94,7 +96,9 @@ export const followUnFollow = catchAsync((req, res, next) => __awaiter(void 0, v
         yield Promise.all([
             User.updateOne({
                 _id: loginUserId,
-            }, { $addToSet: { following: targetUserId } }),
+            }, 
+            // $addToSet digunakan untuk menambahkan elemen ke dalam array, tetapi hanya jika elemen tersebut belum ada.
+            { $addToSet: { following: targetUserId } }),
             User.updateOne({
                 _id: targetUserId,
             }, { $addToSet: { followers: loginUserId } }),
@@ -106,6 +110,18 @@ export const followUnFollow = catchAsync((req, res, next) => __awaiter(void 0, v
         message: isFollowing ? "Unfollowed successfully" : "Followed Successfully",
         data: {
             user: updatedLoggedInUser,
+        },
+    });
+}));
+export const getMe = catchAsync((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = req.user;
+    if (!user)
+        return next(new AppError("User not authenticated", 401));
+    res.status(200).json({
+        status: "Success",
+        message: "Authenticated user",
+        data: {
+            user,
         },
     });
 }));

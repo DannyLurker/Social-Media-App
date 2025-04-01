@@ -13,6 +13,7 @@ import { isAuthenticated } from "../middleware/isAuthenticated.js";
 import {
   editProfile,
   followUnFollow,
+  getMe,
   getProfile,
   suggestedUser,
 } from "../controllers/userController.js";
@@ -41,5 +42,6 @@ router.post(
 );
 router.get("/suggested-user", isAuthenticated, suggestedUser);
 router.post("/follow-unfollow/:id", isAuthenticated, followUnFollow);
+router.get("/me", isAuthenticated, getMe);
 
 export default router;

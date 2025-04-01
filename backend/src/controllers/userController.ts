@@ -100,6 +100,7 @@ export const followUnFollow = catchAsync(async (req, res, next) => {
     await Promise.all([
       User.updateOne(
         { _id: loginUserId },
+        // $pull digunakan untuk menghapus elemen tertentu dari array dalam dokumen MongoDB
         { $pull: { following: targetUserId } }
       ),
       User.updateOne(
@@ -115,6 +116,7 @@ export const followUnFollow = catchAsync(async (req, res, next) => {
         {
           _id: loginUserId,
         },
+        // $addToSet digunakan untuk menambahkan elemen ke dalam array, tetapi hanya jika elemen tersebut belum ada.
         { $addToSet: { following: targetUserId } }
       ),
       User.updateOne(
@@ -135,6 +137,19 @@ export const followUnFollow = catchAsync(async (req, res, next) => {
     message: isFollowing ? "Unfollowed successfully" : "Followed Successfully",
     data: {
       user: updatedLoggedInUser,
+    },
+  });
+});
+
+export const getMe = catchAsync(async (req, res, next) => {
+  const user = (req as any).user;
+  if (!user) return next(new AppError("User not authenticated", 401));
+
+  res.status(200).json({
+    status: "Success",
+    message: "Authenticated user",
+    data: {
+      user,
     },
   });
 });
