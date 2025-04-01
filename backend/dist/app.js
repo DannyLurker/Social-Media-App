@@ -8,7 +8,8 @@ import AppError from "./utils/appError.js";
 import globalErrorHandler from "./controllers/errorController.js";
 import path from "path";
 import { fileURLToPath } from "url";
-import router from "./routes/userRoutes.js";
+import userRouter from "./routes/userRoutes.js";
+import postRouter from "./routes/postRoutes.js";
 // 📌 Mengonversi import.meta.url menjadi path sistem file yang valid
 const __filename = fileURLToPath(import.meta.url);
 // ⬆️ `import.meta.url` mengembalikan URL file dalam format `file://...`
@@ -34,7 +35,8 @@ if (process.env.NODE_DEV === "development") {
 app.use(express.json({ limit: "10kb" }));
 app.use(mongoSanitize());
 // Routes for users
-app.use("/api/v1/users", router);
+app.use("/api/v1/users", userRouter);
+app.use("/api/v1/posts", postRouter);
 // Route for posts
 app.all("*", (req, res, next) => {
     next(new AppError(`Can't find ${req.originalUrl} on this server`, 404));

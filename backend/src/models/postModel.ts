@@ -42,6 +42,9 @@ const postSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+// Index digunakan untuk meningkatkan kecepatan pencarian query dengan cara menyusun data secara lebih optimal.
+// user: 1 → Mengurutkan berdasarkan user secara ascending (A-Z).
+// createdAt: -1 → Mengurutkan berdasarkan createdAt descending (terbaru dulu).
 postSchema.index({ user: 1, createdAt: -1 });
 
 export const Post = mongoose.model("Post", postSchema);
