@@ -71,3 +71,41 @@ export const suggestedUser = catchAsync((req, res, next) => __awaiter(void 0, vo
         },
     });
 }));
+export const followUnFollow = catchAsync((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const loginUserId = req.user.id;
+    const targetUserId = req.params.id;
+    if (loginUserId.toString() === targetUserId) {
+        return next(new AppError("You can't follow/unfollow yourself", 400));
+    }
+    const targetUser = yield User.findById(targetUserId);
+    if (!targetUser) {
+        return next(new AppError("User not found", 404));
+    }
+    const isFollowing = targetUser.followers.includes(loginUserId);
+    if (isFollowing) {
+        yield Promise.all([
+            User.updateOne({ _id: loginUserId }, { $pull: { following: targetUserId } }),
+            User.updateOne({
+                _id: targetUser,
+            }, { $pull: { followers: loginUserId } }),
+        ]);
+    }
+    else {
+        yield Promise.all([
+            User.updateOne({
+                _id: loginUserId,
+            }, { $addToSet: { following: targetUserId } }),
+            User.updateOne({
+                _id: targetUserId,
+            }, { $addToSet: { followers: loginUserId } }),
+        ]);
+    }
+    const updatedLoggedInUser = yield User.findById(loginUserId).select("-password");
+    res.status(200).json({
+        status: "Success",
+        message: isFollowing ? "Unfollowed successfully" : "Followed Successfully",
+        data: {
+            user: updatedLoggedInUser,
+        },
+    });
+}));

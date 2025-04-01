@@ -12,10 +12,12 @@ import {
 import { isAuthenticated } from "../middleware/isAuthenticated.js";
 import {
   editProfile,
+  followUnFollow,
   getProfile,
   suggestedUser,
 } from "../controllers/userController.js";
 import { upload } from "../models/multer.js";
+import { isatty } from "tty";
 
 const router = express.Router();
 
@@ -38,5 +40,6 @@ router.post(
   editProfile
 );
 router.get("/suggested-user", isAuthenticated, suggestedUser);
+router.post("/follow-unfollow/:id", isAuthenticated, followUnFollow);
 
 export default router;
