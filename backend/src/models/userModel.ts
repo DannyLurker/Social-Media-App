@@ -19,11 +19,6 @@ interface IUser {
   isModified: (path: string) => boolean;
 }
 
-type Password = {
-  userPassword: string;
-  databasePassword: string;
-};
-
 const userSchema = new mongoose.Schema(
   {
     username: {
@@ -66,6 +61,7 @@ const userSchema = new mongoose.Schema(
       maxlength: 150,
       default: "",
     },
+    // Menggunakan array karena user bisa saja diikuti oleh lebih dari satu user
     followers: [
       {
         type: mongoose.Schema.Types.ObjectId,
