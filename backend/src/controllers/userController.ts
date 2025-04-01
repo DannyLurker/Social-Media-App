@@ -63,3 +63,19 @@ export const editProfile = catchAsync(async (req, res, next) => {
     },
   });
 });
+
+export const suggestedUser = catchAsync(async (req, res, next) => {
+  const loginUserId = (req as any).user.id;
+
+  // Mencari semua pengguna yang tidak memiliki _id yang sama dengan loginUserId ($ne berarti "not equal" di MongoDB).
+  const users = await User.find({ _id: { $ne: loginUserId } }).select(
+    "-password -otp -otpExpires -resetPasswordOTP -resetPasswordOTPExpires -passwordConfirm"
+  );
+
+  res.status(200).json({
+    status: "Success",
+    data: {
+      users,
+    },
+  });
+});

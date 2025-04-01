@@ -10,7 +10,11 @@ import {
   changePassword,
 } from "../controllers/authController.js";
 import { isAuthenticated } from "../middleware/isAuthenticated.js";
-import { editProfile, getProfile } from "../controllers/userController.js";
+import {
+  editProfile,
+  getProfile,
+  suggestedUser,
+} from "../controllers/userController.js";
 import { upload } from "../models/multer.js";
 
 const router = express.Router();
@@ -33,5 +37,6 @@ router.post(
   upload.single("profilePicture"),
   editProfile
 );
+router.get("/suggested-user", isAuthenticated, suggestedUser);
 
 export default router;

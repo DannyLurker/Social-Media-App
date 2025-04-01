@@ -1,7 +1,7 @@
 import express from "express";
 import { resendOtp, signUp, verifyAccount, login, logout, forgetPassword, resetPassword, changePassword, } from "../controllers/authController.js";
 import { isAuthenticated } from "../middleware/isAuthenticated.js";
-import { editProfile, getProfile } from "../controllers/userController.js";
+import { editProfile, getProfile, suggestedUser, } from "../controllers/userController.js";
 import { upload } from "../models/multer.js";
 const router = express.Router();
 // Auth Routes
@@ -16,4 +16,5 @@ router.post("/change-password", isAuthenticated, changePassword);
 // User routes
 router.get("/profile/:id", getProfile);
 router.post("/edit-profile", isAuthenticated, upload.single("profilePicture"), editProfile);
+router.get("/suggested-user", isAuthenticated, suggestedUser);
 export default router;
