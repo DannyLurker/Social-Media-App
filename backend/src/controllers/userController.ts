@@ -1,9 +1,7 @@
-import { upload } from "../middleware/multer.js";
 import { User } from "../models/userModel.js";
 import AppError from "../utils/appError.js";
 import catchAsync from "../utils/catchAsync.js";
 import { uploadToCloudinary } from "../utils/cloudinary.js";
-import { getDataUri } from "../utils/datauri.js";
 
 export const getProfile = catchAsync(async (req, res, next) => {
   const { id } = req.params;
@@ -36,13 +34,12 @@ export const editProfile = catchAsync(async (req, res, next) => {
   const userId = (req as any).user.id;
 
   const { bio } = req.body;
-  const profilePicture = (req as any).file;
+  const profilePicture = req.file;
 
   let cloudResponse;
 
   if (profilePicture) {
-    const fileUri = getDataUri(profilePicture);
-    cloudResponse = await uploadToCloudinary(fileUri as string);
+    cloudResponse = await uploadToCloudinary(profilePicture.buffer);
   }
 
   const user = await User.findById(userId).select("-password");

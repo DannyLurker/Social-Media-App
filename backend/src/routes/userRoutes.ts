@@ -18,7 +18,6 @@ import {
   suggestedUser,
 } from "../controllers/userController.js";
 import { upload } from "../middleware/multer.js";
-import { isatty } from "tty";
 
 const router = express.Router();
 

@@ -1,3 +1,4 @@
+// datauri tidak terpakai karena saya menggunakan sistem buffer pada seluruh image yang akan di simpan pada DB
 import DataUriParser from "datauri/parser.js";
 import { fileURLToPath } from "url";
 import path from "path";

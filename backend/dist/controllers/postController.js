@@ -28,13 +28,12 @@ export const createPost = catchAsync((req, res, next) => __awaiter(void 0, void 
     })
         .toFormat("jpeg", { quality: 80 })
         .toBuffer();
-    const fileUri = `data:image/jpeg;base64,${optimizedImageBuffer.toString("base64")}`;
-    const cloudResponse = yield uploadToCloudinary(fileUri);
+    const cloudResponse = yield uploadToCloudinary(optimizedImageBuffer);
     let post = yield Post.create({
         caption,
         image: {
-            url: cloudResponse.secure_url,
-            publicId: cloudResponse.public_id,
+            url: cloudResponse === null || cloudResponse === void 0 ? void 0 : cloudResponse.secure_url,
+            publicId: cloudResponse === null || cloudResponse === void 0 ? void 0 : cloudResponse.public_id,
         },
         user: userId,
     });

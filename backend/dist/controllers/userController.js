@@ -11,7 +11,6 @@ import { User } from "../models/userModel.js";
 import AppError from "../utils/appError.js";
 import catchAsync from "../utils/catchAsync.js";
 import { uploadToCloudinary } from "../utils/cloudinary.js";
-import { getDataUri } from "../utils/datauri.js";
 export const getProfile = catchAsync((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     const user = yield User.findById({ _id: id })
@@ -40,8 +39,7 @@ export const editProfile = catchAsync((req, res, next) => __awaiter(void 0, void
     const profilePicture = req.file;
     let cloudResponse;
     if (profilePicture) {
-        const fileUri = getDataUri(profilePicture);
-        cloudResponse = yield uploadToCloudinary(fileUri);
+        cloudResponse = yield uploadToCloudinary(profilePicture.buffer);
     }
     const user = yield User.findById(userId).select("-password");
     if (!user)

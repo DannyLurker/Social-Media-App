@@ -13,6 +13,7 @@ export const createPost = catchAsync(async (req, res, next) => {
   if (!image) return next(new AppError("Image is required for the post", 400));
 
   //  Optimize our image
+
   const optimizedImageBuffer = await sharp(image.buffer)
     .resize({
       width: 800,
@@ -22,17 +23,13 @@ export const createPost = catchAsync(async (req, res, next) => {
     .toFormat("jpeg", { quality: 80 })
     .toBuffer();
 
-  const fileUri = `data:image/jpeg;base64,${optimizedImageBuffer.toString(
-    "base64"
-  )}`;
-
-  const cloudResponse = await uploadToCloudinary(fileUri);
+  const cloudResponse = await uploadToCloudinary(optimizedImageBuffer);
 
   let post = await Post.create({
     caption,
     image: {
-      url: cloudResponse.secure_url,
-      publicId: cloudResponse.public_id,
+      url: cloudResponse?.secure_url,
+      publicId: cloudResponse?.public_id,
     },
     user: userId,
   });
