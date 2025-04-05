@@ -1,4 +1,4 @@
-// datauri tidak terpakai karena saya menggunakan sistem buffer pada seluruh image yang akan di simpan pada DB
+// datauri tidak terpakai karena saya menggunakan buffer pada saat ingin menyimpan image sebelum di ubah menjadi path url di Cloudinary
 
 import DataUriParser from "datauri/parser.js";
 import { fileURLToPath } from "url";

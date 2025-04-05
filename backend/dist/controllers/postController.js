@@ -55,3 +55,27 @@ export const createPost = catchAsync((req, res, next) => __awaiter(void 0, void 
         },
     });
 }));
+export const getAllPost = catchAsync((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    // Ketika kamu menggunakan .populate() di Mongoose, data yang "diisi" itu hanya muncul di level aplikasi(saat apk di run), bukan disimpan permanen di database.
+    const posts = yield Post.find()
+        .populate({
+        path: "user",
+        select: "username profilePicture bio",
+    })
+        .populate({
+        path: "comments",
+        select: "text user",
+        populate: {
+            path: "user",
+            select: "username profilePicture ",
+        },
+    })
+        .sort({ createdAt: -1 });
+    return res.status(200).json({
+        status: "success",
+        results: posts.length,
+        data: {
+            posts,
+        },
+    });
+}));

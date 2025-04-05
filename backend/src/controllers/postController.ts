@@ -4,6 +4,7 @@ import sharp from "sharp";
 import { uploadToCloudinary } from "../utils/cloudinary.js";
 import { Post } from "../models/postModel.js";
 import { User } from "../models/userModel.js";
+import { Comment } from "../models/commentModel.js";
 
 export const createPost = catchAsync(async (req, res, next) => {
   const { caption } = req.body;
@@ -52,6 +53,33 @@ export const createPost = catchAsync(async (req, res, next) => {
     message: "Post created",
     data: {
       post,
+    },
+  });
+});
+
+export const getAllPost = catchAsync(async (req, res, next) => {
+  // Ketika kamu menggunakan .populate() di Mongoose, data yang "diisi" itu hanya muncul di level aplikasi(saat apk di run), bukan disimpan permanen di database.
+
+  const posts = await Post.find()
+    .populate({
+      path: "user",
+      select: "username profilePicture bio",
+    })
+    .populate({
+      path: "comments",
+      select: "text user",
+      populate: {
+        path: "user",
+        select: "username profilePicture ",
+      },
+    })
+    .sort({ createdAt: -1 });
+
+  return res.status(200).json({
+    status: "success",
+    results: posts.length,
+    data: {
+      posts,
     },
   });
 });
