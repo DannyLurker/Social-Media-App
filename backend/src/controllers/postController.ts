@@ -4,7 +4,7 @@ import sharp from "sharp";
 import { uploadToCloudinary } from "../utils/cloudinary.js";
 import { Post } from "../models/postModel.js";
 import { User } from "../models/userModel.js";
-import { Comment } from "../models/commentModel.js";
+import mongoose from "mongoose";
 
 export const createPost = catchAsync(async (req, res, next) => {
   const { caption } = req.body;
@@ -107,4 +107,41 @@ export const getUserPosts = catchAsync(async (req, res, next) => {
       posts,
     },
   });
+});
+
+export const saveOrUnSave = catchAsync(async (req, res, next) => {
+  const userId = (req as any).user._id;
+  const postId = req.params.id;
+
+  const user = await User.findById(userId);
+
+  if (!user) return next(new AppError("User not found", 400));
+
+  // Mengubah postId dari string menjadi ObjectId Karena includes() pada array ObjectId[] tidak bisa langsung mencocokkan string dengan ObjectId
+  // includes(string) kadang bisa jalan, tapi nggak selalu aman, terutama di TypeScript dan untuk developer lain yang baca kodenya.
+  const objectIdPost = new mongoose.Types.ObjectId(postId);
+
+  const isPostSave = user.savedPosts.includes(objectIdPost);
+
+  if (isPostSave) {
+    (user.savedPosts as any).pull(objectIdPost);
+    await user.save({ validateBeforeSave: false });
+    return res.status(200).json({
+      status: "Success",
+      message: "Post unsaved successfull",
+      data: {
+        user,
+      },
+    });
+  } else {
+    user.savedPosts.push(objectIdPost);
+    await user.save({ validateBeforeSave: false });
+    return res.status(200).json({
+      status: "Success",
+      message: "Post saved successfull",
+      data: {
+        user,
+      },
+    });
+  }
 });
