@@ -1,10 +1,11 @@
 import catchAsync from "../utils/catchAsync.js";
 import AppError from "../utils/appError.js";
 import sharp from "sharp";
-import { uploadToCloudinary } from "../utils/cloudinary.js";
+import { cloudinary, uploadToCloudinary } from "../utils/cloudinary.js";
 import { Post } from "../models/postModel.js";
 import { User } from "../models/userModel.js";
 import mongoose from "mongoose";
+import { Comment } from "../models/commentModel.js";
 
 export const createPost = catchAsync(async (req, res, next) => {
   const { caption } = req.body;
@@ -14,7 +15,6 @@ export const createPost = catchAsync(async (req, res, next) => {
   if (!image) return next(new AppError("Image is required for the post", 400));
 
   //  Optimize our image
-
   const optimizedImageBuffer = await sharp(image.buffer)
     .resize({
       width: 800,
@@ -26,11 +26,15 @@ export const createPost = catchAsync(async (req, res, next) => {
 
   const cloudResponse = await uploadToCloudinary(optimizedImageBuffer);
 
+  if (!cloudResponse || !cloudResponse.secure_url || !cloudResponse.public_id) {
+    return next(new AppError("Failed to upload image to Cloudinary", 500));
+  }
+
   let post = await Post.create({
     caption,
     image: {
-      url: cloudResponse?.secure_url,
-      publicId: cloudResponse?.public_id,
+      url: cloudResponse.secure_url,
+      publicId: cloudResponse.public_id,
     },
     user: userId,
   });
@@ -38,10 +42,12 @@ export const createPost = catchAsync(async (req, res, next) => {
   //  Add post to users posts
   const user = await User.findById(userId);
 
-  if (user) {
-    user.posts.push(post.id);
-    await user.save({ validateBeforeSave: false });
+  if (!user) {
+    return next(new AppError("User not found", 404));
   }
+
+  user.posts.push(post._id);
+  await user.save({ validateBeforeSave: false });
 
   post = await post.populate({
     path: "user",
@@ -111,7 +117,7 @@ export const getUserPosts = catchAsync(async (req, res, next) => {
 
 export const saveOrUnSave = catchAsync(async (req, res, next) => {
   const userId = (req as any).user._id;
-  const postId = req.params.id;
+  const postId = req.params.postId;
 
   const user = await User.findById(userId);
 
@@ -144,4 +150,43 @@ export const saveOrUnSave = catchAsync(async (req, res, next) => {
       },
     });
   }
+});
+
+export const deletePost = catchAsync(async (req, res, next) => {
+  const { id } = req.params;
+  const userId = (req as any).user._id;
+
+  const post = await Post.findById(id).populate("user");
+
+  if (!post) {
+    return next(new AppError("Post not found", 404));
+  }
+
+  if (post.user._id.toString() !== userId.toString()) {
+    return next(
+      new AppError("You are not authorized to delete this post", 403)
+    );
+  }
+
+  // Remove this post from user posts
+  await User.updateOne({ _id: userId }, { $pull: { post: id } });
+
+  // Remove this post from user save list
+  await User.updateMany({ savedPosts: id }, { $pull: { savedPosts: id } });
+
+  // Remove the comment of this post
+  await Comment.deleteMany({ post: id });
+
+  // Remove from cloudinary
+  if (post.image?.publicId) {
+    await cloudinary.uploader.destroy(post.image.publicId);
+  }
+
+  // Remove the post
+  await Post.findByIdAndDelete(id);
+
+  res.status(200).json({
+    status: "success",
+    message: "Post deleted successfully",
+  });
 });

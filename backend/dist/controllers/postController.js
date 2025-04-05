@@ -10,10 +10,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 import catchAsync from "../utils/catchAsync.js";
 import AppError from "../utils/appError.js";
 import sharp from "sharp";
-import { uploadToCloudinary } from "../utils/cloudinary.js";
+import { cloudinary, uploadToCloudinary } from "../utils/cloudinary.js";
 import { Post } from "../models/postModel.js";
 import { User } from "../models/userModel.js";
 import mongoose from "mongoose";
+import { Comment } from "../models/commentModel.js";
 export const createPost = catchAsync((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { caption } = req.body;
     const image = req.file;
@@ -30,20 +31,24 @@ export const createPost = catchAsync((req, res, next) => __awaiter(void 0, void 
         .toFormat("jpeg", { quality: 80 })
         .toBuffer();
     const cloudResponse = yield uploadToCloudinary(optimizedImageBuffer);
+    if (!cloudResponse || !cloudResponse.secure_url || !cloudResponse.public_id) {
+        return next(new AppError("Failed to upload image to Cloudinary", 500));
+    }
     let post = yield Post.create({
         caption,
         image: {
-            url: cloudResponse === null || cloudResponse === void 0 ? void 0 : cloudResponse.secure_url,
-            publicId: cloudResponse === null || cloudResponse === void 0 ? void 0 : cloudResponse.public_id,
+            url: cloudResponse.secure_url,
+            publicId: cloudResponse.public_id,
         },
         user: userId,
     });
     //  Add post to users posts
     const user = yield User.findById(userId);
-    if (user) {
-        user.posts.push(post.id);
-        yield user.save({ validateBeforeSave: false });
+    if (!user) {
+        return next(new AppError("User not found", 404));
     }
+    user.posts.push(post._id);
+    yield user.save({ validateBeforeSave: false });
     post = yield post.populate({
         path: "user",
         select: "username email bio profilePicture",
@@ -104,7 +109,7 @@ export const getUserPosts = catchAsync((req, res, next) => __awaiter(void 0, voi
 }));
 export const saveOrUnSave = catchAsync((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const userId = req.user._id;
-    const postId = req.params.id;
+    const postId = req.params.postId;
     const user = yield User.findById(userId);
     if (!user)
         return next(new AppError("User not found", 400));
@@ -134,4 +139,32 @@ export const saveOrUnSave = catchAsync((req, res, next) => __awaiter(void 0, voi
             },
         });
     }
+}));
+export const deletePost = catchAsync((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    const { id } = req.params;
+    const userId = req.user._id;
+    const post = yield Post.findById(id).populate("user");
+    if (!post) {
+        return next(new AppError("Post not found", 404));
+    }
+    if (post.user._id.toString() !== userId.toString()) {
+        return next(new AppError("You are not authorized to delete this post", 403));
+    }
+    // Remove this post from user posts
+    yield User.updateOne({ _id: userId }, { $pull: { post: id } });
+    // Remove this post from user save list
+    yield User.updateMany({ savedPosts: id }, { $pull: { savedPosts: id } });
+    // Remove the comment of this post
+    yield Comment.deleteMany({ post: id });
+    // Remove from cloudinary
+    if ((_a = post.image) === null || _a === void 0 ? void 0 : _a.publicId) {
+        yield cloudinary.uploader.destroy(post.image.publicId);
+    }
+    // Remove the post
+    yield Post.findByIdAndDelete(id);
+    res.status(200).json({
+        status: "success",
+        message: "Post deleted successfully",
+    });
 }));

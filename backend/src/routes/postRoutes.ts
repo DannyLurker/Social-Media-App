@@ -1,6 +1,7 @@
 import express from "express";
 import {
   createPost,
+  deletePost,
   getAllPost,
   getUserPosts,
   saveOrUnSave,
@@ -19,6 +20,7 @@ router.post(
 );
 router.get("/all", getAllPost);
 router.get("/user-post/:id", getUserPosts);
-router.post("/save-unsave-post/:id", isAuthenticated, saveOrUnSave);
+router.post("/save-unsave-post/:postId", isAuthenticated, saveOrUnSave);
+router.delete("/delete-post/:id", isAuthenticated, deletePost);
 
 export default router;
