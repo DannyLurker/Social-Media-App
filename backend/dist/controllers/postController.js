@@ -79,3 +79,25 @@ export const getAllPost = catchAsync((req, res, next) => __awaiter(void 0, void 
         },
     });
 }));
+export const getUserPosts = catchAsync((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const userId = req.params.id;
+    const posts = yield Post.find({
+        user: userId,
+    })
+        .populate({
+        path: "comments",
+        select: "text user",
+        populate: {
+            path: "user",
+            select: "username profilePicure",
+        },
+    })
+        .sort({ createdAt: -1 });
+    return res.status(200).json({
+        status: "successfull",
+        results: posts.length,
+        data: {
+            posts,
+        },
+    });
+}));
