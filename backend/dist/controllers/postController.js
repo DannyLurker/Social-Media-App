@@ -107,7 +107,7 @@ export const getUserPosts = catchAsync((req, res, next) => __awaiter(void 0, voi
         },
     });
 }));
-export const saveOrUnSave = catchAsync((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+export const saveOrUnsave = catchAsync((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const userId = req.user._id;
     const postId = req.params.postId;
     const user = yield User.findById(userId);
@@ -167,4 +167,30 @@ export const deletePost = catchAsync((req, res, next) => __awaiter(void 0, void 
         status: "success",
         message: "Post deleted successfully",
     });
+}));
+export const likeOrUnlike = catchAsync((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const userId = req.user._id;
+    const postId = req.params.postId;
+    const post = yield Post.findById(postId);
+    if (!post) {
+        return next(new AppError("Post not found", 404));
+    }
+    const isLiked = post.likes.includes(userId);
+    let updatedPost;
+    if (isLiked) {
+        updatedPost = yield Post.findByIdAndUpdate(postId, { $pull: { likes: userId } }, { new: true });
+        return res.status(200).json({
+            status: "success",
+            message: "Successfully disliked the post",
+            data: updatedPost,
+        });
+    }
+    else {
+        updatedPost = yield Post.findByIdAndUpdate(postId, { $addToSet: { likes: userId } }, { new: true });
+        return res.status(200).json({
+            status: "success",
+            message: "Successfully liked the post",
+            data: updatedPost,
+        });
+    }
 }));

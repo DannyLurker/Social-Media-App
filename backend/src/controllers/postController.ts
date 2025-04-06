@@ -115,7 +115,7 @@ export const getUserPosts = catchAsync(async (req, res, next) => {
   });
 });
 
-export const saveOrUnSave = catchAsync(async (req, res, next) => {
+export const saveOrUnsave = catchAsync(async (req, res, next) => {
   const userId = (req as any).user._id;
   const postId = req.params.postId;
 
@@ -189,4 +189,41 @@ export const deletePost = catchAsync(async (req, res, next) => {
     status: "success",
     message: "Post deleted successfully",
   });
+});
+
+export const likeOrUnlike = catchAsync(async (req, res, next) => {
+  const userId = (req as any).user._id;
+  const postId = req.params.postId;
+
+  const post = await Post.findById(postId);
+  if (!post) {
+    return next(new AppError("Post not found", 404));
+  }
+
+  const isLiked = post.likes.includes(userId);
+
+  let updatedPost;
+  if (isLiked) {
+    updatedPost = await Post.findByIdAndUpdate(
+      postId,
+      { $pull: { likes: userId } },
+      { new: true }
+    );
+    return res.status(200).json({
+      status: "success",
+      message: "Successfully disliked the post",
+      data: updatedPost,
+    });
+  } else {
+    updatedPost = await Post.findByIdAndUpdate(
+      postId,
+      { $addToSet: { likes: userId } },
+      { new: true }
+    );
+    return res.status(200).json({
+      status: "success",
+      message: "Successfully liked the post",
+      data: updatedPost,
+    });
+  }
 });

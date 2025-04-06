@@ -4,7 +4,8 @@ import {
   deletePost,
   getAllPost,
   getUserPosts,
-  saveOrUnSave,
+  likeOrUnlike,
+  saveOrUnsave,
 } from "../controllers/postController.js";
 import { isAuthenticated } from "../middleware/isAuthenticated.js";
 import { upload } from "../middleware/multer.js";
@@ -20,7 +21,8 @@ router.post(
 );
 router.get("/all", getAllPost);
 router.get("/user-post/:id", getUserPosts);
-router.post("/save-unsave-post/:postId", isAuthenticated, saveOrUnSave);
+router.post("/save-unsave-post/:postId", isAuthenticated, saveOrUnsave);
 router.delete("/delete-post/:id", isAuthenticated, deletePost);
+router.post("/like-unlike-post/:postId", isAuthenticated, likeOrUnlike);
 
 export default router;
