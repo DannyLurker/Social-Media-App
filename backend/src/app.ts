@@ -10,6 +10,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import userRouter from "./routes/userRoutes.js";
 import postRouter from "./routes/postRoutes.js";
+import dotenv from "dotenv";
 
 // 📌 Mengonversi import.meta.url menjadi path sistem file yang valid
 const __filename = fileURLToPath(import.meta.url);
@@ -40,7 +41,7 @@ app.use(
 // Middleware untuk menyajikan file statis dari folder "public" (CSS, gambar, JavaScript, dll.), yang dapat diakses langsung melalui URL, misalnya: http://localhost:3000/style.css
 app.use(express.static(path.join(__dirname, "public")));
 
-if (process.env.NODE_DEV === "development") {
+if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
 

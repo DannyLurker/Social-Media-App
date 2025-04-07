@@ -227,3 +227,31 @@ export const likeOrUnlike = catchAsync(async (req, res, next) => {
     });
   }
 });
+
+export const addComent = catchAsync(async (req, res, next) => {
+  const postId = req.params.postId;
+  const userId = (req as any).user._id;
+  const user = await User.findById(userId);
+  const { comment } = req.body;
+  const post = await Post.findById(postId);
+
+  if (!post) return next(new AppError("Post not found", 404));
+
+  if (!comment) return next(new AppError("Comment is required ", 404));
+
+  if (!user) return next(new AppError("User not found", 404));
+
+  const newComment = await Comment.create({
+    text: comment,
+    user: userId,
+    createdAt: Date.now(),
+  });
+
+  post.comments.push(newComment._id);
+  await post.save({ validateBeforeSave: false });
+
+  return res.status(200).json({
+    status: "Success",
+    message: "Sucessfully add a comment",
+  });
+});

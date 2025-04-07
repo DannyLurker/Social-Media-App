@@ -29,7 +29,7 @@ app.use(cors({
 }));
 // Middleware untuk menyajikan file statis dari folder "public" (CSS, gambar, JavaScript, dll.), yang dapat diakses langsung melalui URL, misalnya: http://localhost:3000/style.css
 app.use(express.static(path.join(__dirname, "public")));
-if (process.env.NODE_DEV === "development") {
+if (process.env.NODE_ENV === "development") {
     app.use(morgan("dev"));
 }
 app.use(express.json({ limit: "10kb" }));

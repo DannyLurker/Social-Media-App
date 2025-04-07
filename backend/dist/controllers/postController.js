@@ -194,3 +194,27 @@ export const likeOrUnlike = catchAsync((req, res, next) => __awaiter(void 0, voi
         });
     }
 }));
+export const addComent = catchAsync((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const postId = req.params.postId;
+    const userId = req.user._id;
+    const user = yield User.findById(userId);
+    const { comment } = req.body;
+    const post = yield Post.findById(postId);
+    if (!post)
+        return next(new AppError("Post not found", 404));
+    if (!comment)
+        return next(new AppError("Comment is required ", 404));
+    if (!user)
+        return next(new AppError("User not found", 404));
+    const newComment = yield Comment.create({
+        text: comment,
+        user: userId,
+        createdAt: Date.now(),
+    });
+    post.comments.push(newComment._id);
+    yield post.save({ validateBeforeSave: false });
+    return res.status(200).json({
+        status: "Success",
+        message: "Sucessfully add a comment",
+    });
+}));
