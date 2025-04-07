@@ -213,8 +213,40 @@ export const addComent = catchAsync((req, res, next) => __awaiter(void 0, void 0
     });
     post.comments.push(newComment._id);
     yield post.save({ validateBeforeSave: false });
+    yield newComment.populate({
+        path: "user",
+        select: "username profilePicture bio",
+    });
     return res.status(200).json({
         status: "Success",
         message: "Sucessfully add a comment",
+        data: {
+            newComment,
+        },
+    });
+}));
+export const deleteComment = catchAsync((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const userId = req.user._id;
+    const commentId = req.params.commentId;
+    const postId = req.params.postId;
+    const user = yield User.findById(userId);
+    const comment = yield Comment.findById(commentId);
+    const post = yield Post.findById(postId);
+    if (!user)
+        return next(new AppError("User not found", 404));
+    if (!comment)
+        return next(new AppError("Comment not found", 404));
+    if (!post)
+        return next(new AppError("Post not found", 404));
+    if (user._id.toString() !== comment.user.toString())
+        return next(new AppError("You are not authorized to delete this post", 403));
+    yield Promise.all([
+        Comment.findByIdAndDelete(commentId),
+        post.comments.pull(commentId),
+        post.save({ validateBeforeSave: false }),
+    ]);
+    return res.status(200).json({
+        status: "Success",
+        message: "Successfully deleted comment",
     });
 }));
