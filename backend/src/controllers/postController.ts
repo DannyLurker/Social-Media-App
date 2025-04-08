@@ -247,7 +247,7 @@ export const addComent = catchAsync(async (req, res, next) => {
     createdAt: Date.now(),
   });
 
-  post.comments.push(newComment._id);
+  post.comments.push(newComment._id); //Kemungkinan error
   await post.save({ validateBeforeSave: false });
 
   await newComment.populate({
