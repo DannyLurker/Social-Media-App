@@ -5,7 +5,9 @@ import PasswordInput from "./PasswordInput";
 import LoadingButton from "../helper/LoadingButton";
 import Link from "next/link";
 
-const Signup = () => {
+// Kegunaan grid cols pada project ini untuk breakpoint (responsive), jadi ketika berada di breakpoint dibawah lg hanya hanya akan menampilkan 1 column(vertikal), jika diatas menampilkan 7 column, lalu kegunaan col span itu seperti menentukan berapa column yang akan di gunakan pada breakpoint dibawah lg, col span pada banner akan hilang(hidden) jadi nya hanya menampilkan form, dan jika diatas breakpoint lg, banner akan menggunakan 4 column lalu form akan menggunakan 3 column
+
+const Login = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   return (
@@ -28,18 +30,6 @@ const Signup = () => {
           </h1>
           <form className="block w-[90%] sm:w-[80%] md:w-[90%] lg:w-[90%] xl:w-[80%]">
             <div className="mb-4">
-              <label htmlFor="name" className="font-semibold mb-2 block">
-                Username
-              </label>
-              <input
-                type="text"
-                name="username"
-                id="name"
-                placeholder="Username"
-                className="px-4 py-3 bg-gray-200 rounded-lg w-full block outline-none"
-              />
-            </div>
-            <div className="mb-4">
               <label htmlFor="email" className="font-semibold mb-2 block">
                 Email
               </label>
@@ -58,13 +48,6 @@ const Signup = () => {
                 placeholder="Enter password"
               />
             </div>
-            <div className="mb-4">
-              <PasswordInput
-                label="Password Confirm"
-                name="password"
-                placeholder="Enter password confirm"
-              />
-            </div>
             <LoadingButton
               size={"lg"}
               className="w-full mt-3"
@@ -74,11 +57,11 @@ const Signup = () => {
               Sign Up Now
             </LoadingButton>
           </form>
-          <p className="mt-4 text-lg text-gray-800">
+          <p className="mt-4 text-lg text-gray-800 text-center">
             Already have an account ?{" "}
-            <Link href={"/auth/login"}>
+            <Link href={"/auth/signup"}>
               <span className="text-blue-500 hover:text-blue-600 underline cursor-pointer font-bold">
-                Login Here
+                Create an account
               </span>
             </Link>
           </p>
@@ -88,4 +71,4 @@ const Signup = () => {
   );
 };
 
-export default Signup;
+export default Login;
