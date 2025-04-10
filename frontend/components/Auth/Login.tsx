@@ -37,7 +37,7 @@ const Login = () => {
     const result = await handleAuthRequest(signupReq, setIsLoading);
 
     if (result) {
-      console.log("test:", result);
+      // console.log(result.data.data.user);
       toast.success(result.data.message);
     }
   };
