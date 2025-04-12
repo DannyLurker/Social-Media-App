@@ -1,4 +1,5 @@
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
+import authSlice from "./authSlice";
 import {
   persistReducer,
   FLUSH,
@@ -17,12 +18,12 @@ const persistConfig = {
 };
 
 const rootReducer = combineReducers({
-  auth: "",
+  auth: authSlice,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
-const store = configureStore({
+export const store = configureStore({
   reducer: persistedReducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
