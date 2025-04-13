@@ -8,6 +8,9 @@ import axios from "axios";
 import { BASE_API_URL } from "@/server";
 import { handleAuthRequest } from "../utils/apiRequest";
 import { toast } from "sonner";
+import { useDispatch } from "react-redux";
+import { useRouter } from "next/navigation";
+import { setAuthUser } from "@/store/authSlice";
 
 interface FormData {
   email: string;
@@ -15,8 +18,9 @@ interface FormData {
 }
 
 const Login = () => {
+  const dispatch = useDispatch();
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
-
   const [formData, setFormData] = useState<FormData>({
     email: "",
     password: "",
@@ -37,8 +41,9 @@ const Login = () => {
     const result = await handleAuthRequest(signupReq, setIsLoading);
 
     if (result) {
-      // console.log(result.data.data.user);
+      dispatch(setAuthUser(result.data.data.user));
       toast.success(result.data.message);
+      router.push("/");
     }
   };
 
@@ -86,6 +91,12 @@ const Login = () => {
                 value={formData.password}
                 onChange={handleChange}
               />
+              <Link
+                href={"/auth/forget-password"}
+                className="mt-2 text-blue-400 block font-semibold text-base lg:text-xl cursor-pointer text-right"
+              >
+                Forget Password
+              </Link>
             </div>
             <LoadingButton
               size={"lg"}

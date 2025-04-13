@@ -8,6 +8,9 @@ import axios from "axios";
 import { BASE_API_URL } from "@/server";
 import { handleAuthRequest } from "../utils/apiRequest";
 import { toast } from "sonner";
+import { useDispatch } from "react-redux";
+import { setAuthUser } from "@/store/authSlice";
+import { useRouter } from "next/navigation";
 
 // Kegunaan grid cols pada project ini untuk breakpoint (responsive), jadi ketika berada di breakpoint dibawah lg hanya hanya akan menampilkan 1 column(vertikal), jika diatas menampilkan 7 column, lalu kegunaan col span itu seperti menentukan berapa column yang akan di gunakan pada breakpoint dibawah lg, col span pada banner akan hilang(hidden) jadi nya hanya menampilkan form, dan jika diatas breakpoint lg, banner akan menggunakan 4 column lalu form akan menggunakan 3 column
 
@@ -21,6 +24,8 @@ interface FormData {
 }
 
 const Signup = () => {
+  const dispatch = useDispatch();
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [formData, setFormData] = useState<FormData>({
     username: "",
@@ -44,13 +49,11 @@ const Signup = () => {
     const result = await handleAuthRequest(signupReq, setIsLoading);
 
     if (result) {
-      // console.log(result.data.data.user);
+      dispatch(setAuthUser(result.data.data.user));
       toast.success(result.data.message);
-    }
 
-    //TODOS:
-    //1. Redirect to Homepage
-    //2. Add our user to redux store
+      router.push("/"); // It should be redirect to Email Verification page
+    }
   };
 
   return (
