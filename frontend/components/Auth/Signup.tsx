@@ -52,7 +52,7 @@ const Signup = () => {
       dispatch(setAuthUser(result.data.data.user));
       toast.success(result.data.message);
 
-      router.push("/"); // It should be redirect to Email Verification page
+      router.push("/auth/verify"); // It should be redirect to Email Verification page
     }
   };
 

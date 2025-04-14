@@ -11,7 +11,6 @@ import hbs from "hbs";
 import { sendEmail } from "../utils/email.js";
 import mongoose, { Document } from "mongoose";
 import bcryptjs from "bcryptjs";
-import { title } from "process";
 
 const __filename = fileURLToPath(import.meta.url);
 
@@ -157,6 +156,7 @@ export const signUp = catchAsync(async (req, res, next) => {
 
 export const verifyAccount = catchAsync(async (req, res, next) => {
   const { otp } = req.body;
+
   if (!otp) {
     return next(new AppError("OTP is required for verification", 400));
   }

@@ -108,7 +108,7 @@ const Login = () => {
             </LoadingButton>
           </form>
           <p className="mt-4 text-lg text-gray-800 text-center">
-            You haven't had an account yet ?{" "}
+            You haven&apos;t had an account yet ?{" "}
             <Link href={"/auth/signup"}>
               <span className="text-blue-500 hover:text-blue-600 underline cursor-pointer font-bold">
                 Create an account
