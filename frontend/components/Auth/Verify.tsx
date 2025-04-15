@@ -58,7 +58,7 @@ const Verify = () => {
     e.preventDefault();
     const otpValue = otp.join("");
 
-    const verifyReq = async () => {
+    const verifyReq = async () =>
       await axios.post(
         `${BASE_API_URL}/users/verify`,
         { otp: otpValue },
@@ -66,7 +66,6 @@ const Verify = () => {
           withCredentials: true,
         }
       );
-    };
 
     const result = await handleAuthRequest(verifyReq, setLoadingState);
 
@@ -78,9 +77,25 @@ const Verify = () => {
     }
   };
 
-  // Todos
-  // 1. Fix handle submit
-  // 2. Make resendOTP
+  const handleResendOTP = async (e: FormEvent) => {
+    e.preventDefault();
+
+    const ResendOTPReq = async () =>
+      await axios.post(
+        `${BASE_API_URL}/users/resend-otp`,
+        {},
+        { withCredentials: true }
+      );
+
+    const result = await handleAuthRequest(ResendOTPReq, setLoadingState);
+
+    console.log(result);
+
+    if (result) {
+      dispatch(setAuthUser(result.data.user));
+      toast.success(result.data.message);
+    }
+  };
 
   return (
     <div className="h-screen flex items-center flex-col justify-center">
@@ -112,7 +127,10 @@ const Verify = () => {
         <h1 className="text-sm sm:text-lg font-medium text-gary-700">
           Didn&apos;t get the OTP code ?{" "}
         </h1>
-        <button className="text-sm sm:text-lg font-medium text-blue-900 underline cursor-pointer">
+        <button
+          onClick={handleResendOTP}
+          className="text-sm sm:text-lg font-medium text-blue-900 underline cursor-pointer"
+        >
           Resend Code
         </button>
       </div>

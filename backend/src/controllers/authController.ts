@@ -247,7 +247,18 @@ export const login = catchAsync(async (req, res, next) => {
 
   const user = await User.findOne({ email }).select("+password");
 
-  if (!user || !(await bcryptjs.compare(password, user.password))) {
+  console.log("test" + user);
+
+  if (!user) {
+    return next(new AppError("User not found", 404));
+  }
+
+  if (!user.isVerified) {
+    return next(new AppError("User has not completed OTP verification", 401));
+  }
+
+  const isMatch = await bcryptjs.compare(password, user.password);
+  if (!isMatch) {
     return next(new AppError("Incorrect email or password", 401));
   }
 

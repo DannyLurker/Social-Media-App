@@ -180,7 +180,15 @@ export const login = catchAsync((req, res, next) => __awaiter(void 0, void 0, vo
         return next(new AppError("Please provide email and password", 400));
     }
     const user = yield User.findOne({ email }).select("+password");
-    if (!user || !(yield bcryptjs.compare(password, user.password))) {
+    console.log("test" + user);
+    if (!user) {
+        return next(new AppError("User not found", 404));
+    }
+    if (!user.isVerified) {
+        return next(new AppError("User has not completed OTP verification", 401));
+    }
+    const isMatch = yield bcryptjs.compare(password, user.password);
+    if (!isMatch) {
         return next(new AppError("Incorrect email or password", 401));
     }
     createSendToken(user, 200, res, "Login Successful");

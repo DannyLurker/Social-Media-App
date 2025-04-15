@@ -211,7 +211,7 @@ export const addComent = catchAsync((req, res, next) => __awaiter(void 0, void 0
         user: userId,
         createdAt: Date.now(),
     });
-    post.comments.push(newComment._id);
+    post.comments.push(newComment._id); //Kemungkinan error
     yield post.save({ validateBeforeSave: false });
     yield newComment.populate({
         path: "user",
