@@ -1,9 +1,10 @@
 "use client";
-import { MailCheck } from "lucide-react";
+import { Loader, MailCheck } from "lucide-react";
 import React, {
   ChangeEvent,
   FormEvent,
   KeyboardEvent,
+  useEffect,
   useRef,
   useState,
 } from "react";
@@ -13,17 +14,28 @@ import { BASE_API_URL } from "@/server";
 import { handleAuthRequest } from "../utils/apiRequest";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setAuthUser } from "@/store/authSlice";
+import { RootState } from "@/store/store";
 
 const Verify = () => {
   const dispatch = useDispatch();
+  const user = useSelector((state: RootState) => state?.auth.user);
   const [loadingState, setLoadingState] = useState<boolean>(false);
   const [otp, setOtp] = useState<string[]>(["", "", "", "", "", ""]);
-
+  const [isPageLoading, setIsPageLoading] = useState<boolean>(true);
+  const router = useRouter();
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
-  const router = useRouter();
+  useEffect(() => {
+    if (!user) {
+      router.replace("auth/login");
+    } else if (user && user.isVerified) {
+      router.replace("/");
+    } else {
+      setIsPageLoading(false);
+    }
+  }, [user, router]);
 
   const handleChange = (
     index: number,
@@ -97,12 +109,20 @@ const Verify = () => {
     }
   };
 
+  if (isPageLoading) {
+    return (
+      <div className="h-screen flex items-center justify-center">
+        <Loader className="w-20 h-20 animate-spin" />
+      </div>
+    );
+  }
+
   return (
     <div className="h-screen flex items-center flex-col justify-center">
       <MailCheck className="w-20 h-20 sm:w-32 sm:h-32 text-red-600 mb-12" />
       <h1 className="text-2xl sm:text-3xl font-bold mb-3">OTP Verification</h1>
       <p className="mb-6 text-sm sm:text-base text-gray-600 font-medium">
-        We have sent a code to test@gmail.com
+        We have sent a code to {user?.email}
       </p>
       <div className="flex space-x-4">
         {[0, 1, 2, 3, 4, 5].map((index) => {

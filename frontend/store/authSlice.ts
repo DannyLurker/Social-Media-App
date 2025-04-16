@@ -5,6 +5,7 @@ interface authState {
   user: User | null;
 }
 
+// Hanya menyimpan 1 data user.
 const initialState: authState = {
   user: null,
 };
