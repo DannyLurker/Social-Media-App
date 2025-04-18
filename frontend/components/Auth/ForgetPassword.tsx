@@ -8,11 +8,9 @@ import axios from "axios";
 import { handleAuthRequest } from "../utils/apiRequest";
 import { useDispatch } from "react-redux";
 import { useRouter } from "next/navigation";
-import { setAuthUser } from "@/store/authSlice";
 import { toast } from "sonner";
 
 const ForgetPassword = () => {
-  const dispatch = useDispatch();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [email, setEmail] = useState<string>("");
@@ -31,9 +29,8 @@ const ForgetPassword = () => {
     const result = await handleAuthRequest(forgetPasswordReq, setIsLoading);
 
     if (result) {
+      router.push(`/auth/reset-password?email=${encodeURIComponent(email)}`);
       toast.success(result.data.message);
-
-      router.push("/"); // It should be goes to the rest password route
     }
   };
 
@@ -54,7 +51,7 @@ const ForgetPassword = () => {
         onChange={(e) => setEmail(e.target.value)}
       />
       <LoadingButton
-        className="w-40 mt-4"
+        className="w-40 mt-4 cursor-pointer"
         size={"lg"}
         isLoading={isLoading}
         onClick={handleSubmit}

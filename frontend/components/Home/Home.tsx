@@ -1,15 +1,23 @@
 "use client";
-import { RootState } from "@/store/store";
 import React from "react";
-import { useSelector } from "react-redux";
+import LeftSidebar from "./LeftSidebar";
+import Feed from "./Feed";
+import RightSidebar from "./RightSidebar";
 
 const Home = () => {
-  const user = useSelector((state: RootState) => state.auth.user);
-  console.log(user);
-
   return (
     <>
-      <h1>Home Page</h1>
+      <div className="flex">
+        <div className="w-[20%] hidden md:block border-r-2 h-screen fixed">
+          <LeftSidebar />
+        </div>
+        <div className="flex-1 md:ml-[20%] overflow-y-auto">
+          <Feed />
+        </div>
+        <div className="w-[30%] pt-8 px-6 lg:block hidden">
+          <RightSidebar />
+        </div>
+      </div>
     </>
   );
 };

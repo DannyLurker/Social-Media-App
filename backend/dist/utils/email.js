@@ -17,7 +17,7 @@ export const sendEmail = (options) => __awaiter(void 0, void 0, void 0, function
         },
     });
     const mailOptions = {
-        from: `"Nexora", Uniting Moments, Inspiring Connections.`, // Identitas pengirim yang benar
+        from: `"Nexora", Where Connections Begin.`, // Identitas pengirim yang benar
         to: options.email, // Email penerima
         subject: options.subject, // Subjek email
         html: options.html, // Isi pesan dalam format HTML

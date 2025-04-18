@@ -247,8 +247,6 @@ export const login = catchAsync(async (req, res, next) => {
 
   const user = await User.findOne({ email }).select("+password");
 
-  console.log("test" + user);
-
   if (!user) {
     return next(new AppError("User not found", 404));
   }
@@ -282,18 +280,17 @@ export const forgetPassword = catchAsync(async (req, res, next) => {
   const { email } = req.body;
   const user = await User.findOne({ email });
 
-  if (!email) {
+  if (!user) {
     return next(new AppError("User not found", 404));
   }
 
   const otp = generateOtp();
   const resetExpires = new Date(Date.now() + 5 * 1000 * 60); //5minutes
 
-  // Jika kamu yakin bahwa expresi yang kamu buat tidak mengembalikan null / undefined kamu dapat menggunakan non-null assertion operator "!"
-  user!.resetPasswordOTP = otp;
-  user!.resetPasswordOTPExpires = resetExpires;
+  user.resetPasswordOTP = otp;
+  user.resetPasswordOTPExpires = resetExpires;
 
-  await user!.save({ validateBeforeSave: false });
+  await user.save({ validateBeforeSave: false });
 
   const htmlTemplate = loadTemplate("otpTemplate", {
     title: "Reset password OTP",
@@ -314,10 +311,10 @@ export const forgetPassword = catchAsync(async (req, res, next) => {
       message: "Reset password OTP has been sent to your email.",
     });
   } catch (error) {
-    user!.resetPasswordOTP = undefined;
-    user!.resetPasswordOTPExpires = undefined;
+    user.resetPasswordOTP = undefined;
+    user.resetPasswordOTPExpires = undefined;
 
-    await user!.save({ validateBeforeSave: false });
+    await user.save({ validateBeforeSave: false });
     return next(
       new AppError(
         "There was a problem sending the email. Please try again",

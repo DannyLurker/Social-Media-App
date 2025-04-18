@@ -180,7 +180,6 @@ export const login = catchAsync((req, res, next) => __awaiter(void 0, void 0, vo
         return next(new AppError("Please provide email and password", 400));
     }
     const user = yield User.findOne({ email }).select("+password");
-    console.log("test" + user);
     if (!user) {
         return next(new AppError("User not found", 404));
     }
@@ -207,12 +206,11 @@ export const logout = catchAsync((req, res, next) => __awaiter(void 0, void 0, v
 export const forgetPassword = catchAsync((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { email } = req.body;
     const user = yield User.findOne({ email });
-    if (!email) {
+    if (!user) {
         return next(new AppError("User not found", 404));
     }
     const otp = generateOtp();
     const resetExpires = new Date(Date.now() + 5 * 1000 * 60); //5minutes
-    // Jika kamu yakin bahwa expresi yang kamu buat tidak mengembalikan null / undefined kamu dapat menggunakan non-null assertion operator "!"
     user.resetPasswordOTP = otp;
     user.resetPasswordOTPExpires = resetExpires;
     yield user.save({ validateBeforeSave: false });
