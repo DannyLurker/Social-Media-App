@@ -29,7 +29,7 @@ const Verify = () => {
 
   useEffect(() => {
     if (!user) {
-      router.replace("auth/login");
+      router.replace("/auth/login");
     } else if (user && user.isVerified) {
       router.replace("/");
     } else {
