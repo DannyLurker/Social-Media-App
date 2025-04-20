@@ -46,6 +46,13 @@ const LeftSidebar = () => {
   const handleSidebar = (label: string) => {
     if (label === "Home") router.push("/");
     if (label === "Logout") handleLogout();
+    if (label === "Profile") {
+      if (!user || !user._id) {
+        toast.error("User not found or not logged in");
+        return;
+      }
+      router.push(`/profile/${user._id}`);
+    }
   };
 
   const sidebarLinks = [
@@ -110,7 +117,11 @@ const LeftSidebar = () => {
                 <div
                   key={link.label}
                   className="flex items-center mb-2 p-3 rounded-lg group cursor-pointer transition-all duration-200 hover:bg-gray-100 space-x-2"
-                  onClick={() => handleSidebar(link.label)}
+                  onClick={(e: FormEvent) => {
+                    // Untuk mencegah event bubling, dikarena nested div, di ln 104 terdapat event click yang menuju   "/"
+                    e.stopPropagation();
+                    handleSidebar(link.label);
+                  }}
                 >
                   <div className="group-hover:scale-110 transition-all duration-200">
                     {link.icon}
