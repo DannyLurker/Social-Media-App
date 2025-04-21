@@ -111,26 +111,24 @@ const LeftSidebar = () => {
             height={150}
             className="mt[-2rem] mx-auto "
           />
-          <div className="mt-6">
-            {sidebarLinks.map((link) => {
-              return (
-                <div
-                  key={link.label}
-                  className="flex items-center mb-2 p-3 rounded-lg group cursor-pointer transition-all duration-200 hover:bg-gray-100 space-x-2"
-                  onClick={(e: FormEvent) => {
-                    // Untuk mencegah event bubling, dikarena nested div, di ln 104 terdapat event click yang menuju   "/"
-                    e.stopPropagation();
-                    handleSidebar(link.label);
-                  }}
-                >
-                  <div className="group-hover:scale-110 transition-all duration-200">
-                    {link.icon}
-                  </div>
-                  <p className="lg:text-lg text-base">{link.label}</p>
+        </div>
+        <div className="mt-6">
+          {sidebarLinks.map((link) => {
+            return (
+              <div
+                key={link.label}
+                className="flex items-center mb-2 p-3 rounded-lg group cursor-pointer transition-all duration-200 hover:bg-gray-100 space-x-2"
+                onClick={(e: FormEvent) => {
+                  handleSidebar(link.label);
+                }}
+              >
+                <div className="group-hover:scale-110 transition-all duration-200">
+                  {link.icon}
                 </div>
-              );
-            })}
-          </div>
+                <p className="lg:text-lg text-base">{link.label}</p>
+              </div>
+            );
+          })}
         </div>
       </div>
     </>
