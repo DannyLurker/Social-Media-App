@@ -1,9 +1,14 @@
 import React from "react";
+import Profile from "@/components/profile/Profile";
 
 const page = async ({ params }: { params: { id: string } }) => {
-  const getParams = await params;
-  console.log(getParams);
-  return <div>Profile page</div>;
+  const id = (await params).id;
+
+  return (
+    <>
+      <Profile id={id} />
+    </>
+  );
 };
 
 export default page;
