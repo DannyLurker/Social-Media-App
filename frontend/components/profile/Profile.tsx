@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { handleAuthRequest } from "../utils/apiRequest";
-import { Loader, User2Icon } from "lucide-react";
+import { Grid, Loader, User2Icon, Bookmark } from "lucide-react";
 import LeftSidebar from "../Home/LeftSidebar";
 import {
   Sheet,
@@ -20,6 +20,9 @@ import { MenuIcon } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import Link from "next/link";
 import { Button } from "../ui/button";
+import { cn } from "@/lib/utils";
+import Post from "./Post";
+import Save from "./Save";
 
 type Props = {
   id: string;
@@ -28,7 +31,7 @@ type Props = {
 const Profile = ({ id }: Props) => {
   const router = useRouter();
   const user = useSelector((state: RootState) => state.auth.user);
-  const [postOrSave, setPostOrSave] = useState<string>("POST");
+  const [postOrSave, setPostOrSave] = useState<"POST" | "SAVE">("POST");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [userProfile, setUserProfile] = useState<User>();
 
@@ -126,10 +129,52 @@ const Profile = ({ id }: Props) => {
                     <span className="font-bold">
                       {userProfile?.posts.length}
                     </span>
-                    <span>Posts</span>
+                    <span> Posts</span>
+                  </div>
+                  <div>
+                    <span className="font-bold">
+                      {userProfile?.followers.length}
+                    </span>
+                    <span> followers</span>
+                  </div>
+                  <div>
+                    <span className="font-bold">
+                      {userProfile?.following.length}
+                    </span>
+                    <span> following</span>
                   </div>
                 </div>
+                <p className="w-80 font-medium">
+                  {userProfile?.bio || "Nexora User"}
+                </p>
               </div>
+            </div>
+            {/* Bottom Profile and Save */}
+            <div className="mt-10">
+              <div className="flex items-center justify-center space-x-14">
+                <div
+                  className={cn(
+                    "flex items-center space-x-2 cursor-pointer",
+                    postOrSave === "POST" && "text-blue-500"
+                  )}
+                  onClick={() => setPostOrSave("POST")}
+                >
+                  <Grid />
+                  <span className="font-semibold">Post</span>
+                </div>
+                <div
+                  className={cn(
+                    "flex items-center space-x-2 cursor-pointer",
+                    postOrSave === "SAVE" && "text-blue-500"
+                  )}
+                  onClick={() => setPostOrSave("SAVE")}
+                >
+                  <Bookmark />
+                  <span className="font-semibold">Saved</span>
+                </div>
+              </div>
+              {postOrSave === "POST" && <Post userProfile={userProfile} />}
+              {postOrSave === "SAVE" && <Save userProfile={userProfile} />}
             </div>
           </div>
         </div>
