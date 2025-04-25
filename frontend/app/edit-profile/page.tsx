@@ -1,4 +1,5 @@
 "use client";
+import PasswordInput from "@/components/Auth/PasswordInput";
 import LoadingButton from "@/components/helper/LoadingButton";
 import LeftSidebar from "@/components/Home/LeftSidebar";
 import {
@@ -8,11 +9,16 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { handleAuthRequest } from "@/components/utils/apiRequest";
+import { BASE_API_URL } from "@/server";
+import { setAuthUser } from "@/store/authSlice";
 import { RootState } from "@/store/store";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
+import axios from "axios";
 import { MenuIcon, User2Icon } from "lucide-react";
-import React, { ChangeEvent, useRef, useState } from "react";
+import React, { FormEvent, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { toast } from "sonner";
 
 const page = () => {
   const dispatch = useDispatch();
@@ -21,19 +27,68 @@ const page = () => {
     user?.profilePicture || null
   );
   const [bio, setBio] = useState(user?.bio || "");
-  const [currentPassowrd, setCurrentPassword] = useState("");
+  const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
-  const [newPasswordConfrim, setNewPasswordConfirm] = useState("");
+  const [newPasswordConfirm, setNewPasswordConfirm] = useState("");
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [isloading, setIsLoading] = useState(false);
 
-  const handleAvatarClick = () => {};
+  const handleAvatarClick = () => {
+    if (fileInputRef.current) fileInputRef.current.click();
+  };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {};
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => setSelectedImage(reader.result as string);
+      reader.readAsDataURL(file);
+    }
+  };
 
-  const handleUpdateProfile = async () => {};
+  const handleUpdateProfile = async (e: FormEvent) => {
+    e.preventDefault();
+    const formData = new FormData();
+    formData.append("bio", bio);
 
-  const handlePasswordChange = async () => {};
+    if (fileInputRef.current?.files?.[0]) {
+      formData.append("profilePicture", fileInputRef.current?.files?.[0]);
+    }
+
+    const updateProfileReq = async () => {
+      return await axios.post(`${BASE_API_URL}/users/edit-profile`, formData, {
+        withCredentials: true,
+      });
+    };
+    const result = await handleAuthRequest(updateProfileReq, setIsLoading);
+
+    if (result) {
+      dispatch(setAuthUser(result.data.data.user));
+      toast.success(result.data.message);
+    }
+  };
+
+  const handlePasswordChange = async (e: FormEvent) => {
+    e.preventDefault();
+    const passwordChangeReq = async () => {
+      return await axios.post(
+        `${BASE_API_URL}/users/change-password`,
+        {
+          currentPassword,
+          newPassword,
+          newPasswordConfirm,
+        },
+        {
+          withCredentials: true,
+        }
+      );
+    };
+    const result = await handleAuthRequest(passwordChangeReq, setIsLoading);
+
+    if (result) {
+      toast.success(result.data.message);
+    }
+  };
 
   return (
     <div className="flex">
@@ -93,6 +148,71 @@ const page = () => {
                 Change Photo
               </LoadingButton>
             </div>
+          </div>
+          <div className="mt-10 border-b-2 pb-10">
+            <label htmlFor="bio" className="block font-bold mb-2 ">
+              Bio
+            </label>
+            <textarea
+              value={bio}
+              onChange={(e) => setBio(e.target.value)}
+              className="w-full h-[7rem] bg-gray-200 outline-none p-6 rounded-md"
+            ></textarea>
+            <LoadingButton
+              isLoading={isloading}
+              size={"lg"}
+              className="mt-6"
+              onClick={handleUpdateProfile}
+            >
+              Change Bio
+            </LoadingButton>
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900 mt-6 ">
+              Change Password
+            </h1>
+            <form className="mt-8 mb-8" onSubmit={handlePasswordChange}>
+              <div className="w-[90%] md:w-[80%] lg:w-[60%]">
+                <PasswordInput
+                  name="currentpassword"
+                  value={currentPassword}
+                  label="Current Password"
+                  onChange={(e) => {
+                    setCurrentPassword(e.target.value);
+                  }}
+                />
+              </div>
+              <div className="w-[90%] md:w-[80%] lg:w-[60%] mt-4 mb-4">
+                <PasswordInput
+                  name="newpassword"
+                  value={newPassword}
+                  label="New Password"
+                  onChange={(e) => {
+                    setNewPassword(e.target.value);
+                  }}
+                />
+              </div>
+              <div className="w-[90%] md:w-[80%] lg:w-[60%] ">
+                <PasswordInput
+                  name="confirmpassword"
+                  value={newPasswordConfirm}
+                  label="New Password Confirm"
+                  onChange={(e) => {
+                    setNewPasswordConfirm(e.target.value);
+                  }}
+                />
+              </div>
+              <div className="mt-6">
+                <LoadingButton
+                  isLoading={isloading}
+                  type="submit"
+                  className="bg-red-700"
+                  onClick={handlePasswordChange}
+                >
+                  Change Password
+                </LoadingButton>
+              </div>
+            </form>
           </div>
         </div>
       </div>
