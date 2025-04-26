@@ -35,7 +35,7 @@ export const getProfile = catchAsync((req, res, next) => __awaiter(void 0, void 
 }));
 export const editProfile = catchAsync((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const userId = req.user.id;
-    const { bio } = req.body;
+    const { bio, username } = req.body;
     const profilePicture = req.file;
     let cloudResponse;
     if (profilePicture) {
@@ -44,6 +44,12 @@ export const editProfile = catchAsync((req, res, next) => __awaiter(void 0, void
     const user = yield User.findById(userId).select("-password");
     if (!user)
         return next(new AppError("User not found", 404));
+    if (username) {
+        user.username = username;
+    }
+    else {
+        return next(new AppError("Username must be filled", 401));
+    }
     if (bio)
         user.bio = bio;
     // Ketika kamu mengunggah gambar ke Cloudinary, respons (cloudResponse) yang dikembalikan biasanya berisi properti secure_url. Properti ini berisi URL gambar yang dapat diakses melalui HTTPS, sehingga aman untuk digunakan di aplikasi.

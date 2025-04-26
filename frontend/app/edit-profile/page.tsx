@@ -26,6 +26,7 @@ const page = () => {
   const [selectedImage, setSelectedImage] = useState<string | null>(
     user?.profilePicture || null
   );
+  const [username, setUsername] = useState(user?.username || "");
   const [bio, setBio] = useState(user?.bio || "");
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -51,6 +52,7 @@ const page = () => {
     const formData = new FormData();
     formData.append("bio", bio);
 
+    formData.append("username", username);
     if (fileInputRef.current?.files?.[0]) {
       formData.append("profilePicture", fileInputRef.current?.files?.[0]);
     }
@@ -150,21 +152,30 @@ const page = () => {
             </div>
           </div>
           <div className="mt-10 border-b-2 pb-10">
-            <label htmlFor="bio" className="block font-bold mb-2 ">
+            <label htmlFor="username" className="block font-bold mb-2 ">
+              Username
+            </label>
+            <input
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              className="w-full bg-gray-200 outline-none p-6 rounded-md mb-4"
+            />
+            <label htmlFor="bio" className="block font-bold mb-2">
               Bio
             </label>
             <textarea
               value={bio}
               onChange={(e) => setBio(e.target.value)}
               className="w-full h-[7rem] bg-gray-200 outline-none p-6 rounded-md"
-            ></textarea>
+            />
             <LoadingButton
               isLoading={isloading}
               size={"lg"}
               className="mt-6"
               onClick={handleUpdateProfile}
             >
-              Change Bio
+              Update Profile
             </LoadingButton>
           </div>
           <div>
