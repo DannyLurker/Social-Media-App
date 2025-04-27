@@ -10,7 +10,7 @@ import {
   SquarePlus,
   User2Icon,
 } from "lucide-react";
-import React, { FormEvent } from "react";
+import React, { FormEvent, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -19,11 +19,14 @@ import { BASE_API_URL } from "@/server";
 import axios from "axios";
 import { toast } from "sonner";
 import { setAuthUser } from "@/store/authSlice";
+import CreatePostModel from "./CreatePostModel";
 
 const LeftSidebar = () => {
   const user = useSelector((state: RootState) => state.auth.user);
   const dispatch = useDispatch();
   const router = useRouter();
+
+  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
 
   const handleLogout = async () => {
     const logoutReq = async () => {
@@ -53,6 +56,7 @@ const LeftSidebar = () => {
       }
       router.push(`/profile/${user._id}`);
     }
+    if (label === "Create") setIsDialogOpen(true);
   };
 
   const sidebarLinks = [
@@ -100,6 +104,10 @@ const LeftSidebar = () => {
   return (
     <>
       <div className="h-full ">
+        <CreatePostModel
+          isOpen={isDialogOpen}
+          onClose={() => setIsDialogOpen(false)}
+        />
         <div
           onClick={() => router.push("/")}
           className="lg:p-6 p-3 cursor-pointer"

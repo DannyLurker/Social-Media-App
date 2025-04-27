@@ -25,7 +25,7 @@ export const uploadToCloudinary = (buffer) => __awaiter(void 0, void 0, void 0, 
         readable._read = () => { };
         // Melalakukan push pada data buffer
         readable.push(buffer);
-        // readable.push(null) dipanggil untuk menandakan akhir dari stream (EOF).
+        // readable.push(null) dipanggil untuk menandakan akhir dari stream (EOF / End of File).
         readable.push(null);
         //upload_stream(...) dipanggil, fungsi ini membuat koneksi ke Cloudinary dan menunggu data masuk melalui stream.
         const uploadStream = cloudinary.uploader.upload_stream({ folder: "posts" }, 
