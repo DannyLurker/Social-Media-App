@@ -99,13 +99,13 @@ const Feed = () => {
               </div>
               <div>
                 {/* Image */}
-                <div className="mt-2">
+                <div className="mt-2 flex justify-center">
                   <Image
                     src={`${post.image?.url}`}
                     alt={"Post"}
                     width={400}
                     height={400}
-                    className={"w-full"}
+                    className="w-full md:w-[400px] h-auto object-cover rounded-md"
                   />
                 </div>
                 <div className="flex mt-3 items-center justify-between">

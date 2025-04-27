@@ -145,7 +145,7 @@ const EditProfile = () => {
                 isLoading={isloading}
                 size={"lg"}
                 className="bg-blue-800 mt-4"
-                onClick={handleUpdateProfile}
+                onClick={handleAvatarClick}
               >
                 Change Photo
               </LoadingButton>
