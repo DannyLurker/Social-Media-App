@@ -109,10 +109,10 @@ const RightSidebar = () => {
         </div>
         <div
           onClick={handleSeeAll}
-          className="flex space-x-1.5 bg-gray-200 px-1 py-0.5 rounded-md"
+          className="flex space-x-1.5 bg-gray-200 px-1 py-0.5 rounded-md cursor-pointer"
         >
           <ArrowDownUpIcon />
-          <h1 className="font-medium cursor-pointer">See all</h1>
+          <h1 className="font-medium">See all</h1>
         </div>
       </div>
       {seeAll &&
