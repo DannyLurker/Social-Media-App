@@ -93,9 +93,8 @@ const Feed = () => {
                     </AvatarFallback>
                   </Avatar>
                   <h1>{post.user?.username}</h1>
-                  {/* DotButton */}
                 </div>
-                <DotButton />
+                <DotButton post={post} user={user} />
               </div>
               <div>
                 {/* Image */}
@@ -116,11 +115,13 @@ const Feed = () => {
                   </div>
                   <Bookmark className="cursor-pointer" />
                 </div>
-                <h1 className="mt-2 text-sm font-semibold">
+                <h1 className="mt-2 text-sm sm:text-base font-semibold">
                   {post.likes.length} likes
                 </h1>
                 <p className="mt-2 font-medium">{post.caption}</p>
-                <Comment />
+                {post.comments.length > 0 ? (
+                  <Comment user={user} post={post} />
+                ) : null}
                 <div className="mt-2 flex items-center">
                   <input
                     type="text"

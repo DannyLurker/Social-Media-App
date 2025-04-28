@@ -10,9 +10,5 @@ const commentSchema = new mongoose.Schema({
         ref: "User",
         required: true,
     },
-    createdAt: {
-        type: String,
-        default: Date.now(),
-    },
 }, { timestamps: true });
 export const Comment = mongoose.model("Comment", commentSchema);

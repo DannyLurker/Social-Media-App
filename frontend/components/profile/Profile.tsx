@@ -4,8 +4,8 @@ import { RootState } from "@/store/store";
 import { User } from "@/types";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import React, { FormEvent, useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { handleAuthRequest } from "../utils/apiRequest";
 import { Grid, Loader, User2Icon, Bookmark } from "lucide-react";
 import LeftSidebar from "../Home/LeftSidebar";
@@ -23,6 +23,8 @@ import { Button } from "../ui/button";
 import { cn } from "@/lib/utils";
 import Post from "./Post";
 import Save from "./Save";
+import { toast } from "sonner";
+import { setAuthUser } from "@/store/authSlice";
 
 type Props = {
   id: string;
@@ -30,6 +32,7 @@ type Props = {
 
 const Profile = ({ id }: Props) => {
   const router = useRouter();
+  const dispatch = useDispatch();
   const user = useSelector((state: RootState) => state.auth.user);
   const [postOrSave, setPostOrSave] = useState<"POST" | "SAVE">("POST");
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -37,6 +40,27 @@ const Profile = ({ id }: Props) => {
 
   const isOwnProfile = user?._id === id;
   const isFollowing = user?.following.includes(id);
+
+  const handleFollowUnfollow = async (e: FormEvent) => {
+    e.preventDefault();
+    const handleFollowUnfollowReq = async () => {
+      return await axios.post(
+        `${BASE_API_URL}/users/follow-unfollow/${id}`,
+        {},
+        { withCredentials: true }
+      );
+    };
+
+    const result = await handleAuthRequest(
+      handleFollowUnfollowReq,
+      setIsLoading
+    );
+
+    if (result) {
+      dispatch(setAuthUser(result.data.data.user));
+      toast.success(`Successfully Follow ${userProfile?.username}`);
+    }
+  };
 
   useEffect(() => {
     if (!user) {
@@ -119,6 +143,7 @@ const Profile = ({ id }: Props) => {
                     <Button
                       variant={isFollowing ? "destructive" : "secondary"}
                       className="cursor-pointer"
+                      onClick={handleFollowUnfollow}
                     >
                       {isFollowing ? "Unfollow" : "Follow"}
                     </Button>

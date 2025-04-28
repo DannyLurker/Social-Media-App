@@ -34,10 +34,6 @@ const postSchema = new mongoose.Schema(
         ref: "Comment",
       },
     ],
-    createdAt: {
-      type: String,
-      default: Date.now(),
-    },
   },
   { timestamps: true }
 );

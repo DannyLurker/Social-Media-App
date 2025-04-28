@@ -110,10 +110,6 @@ const userSchema = new mongoose.Schema(
       default: null,
       required: false, //perlu untuk menghindari error message dari TS
     },
-    createdAt: {
-      type: Date,
-      default: Date.now(),
-    },
   },
   {
     timestamps: true,

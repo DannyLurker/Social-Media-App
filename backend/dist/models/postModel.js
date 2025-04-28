@@ -32,10 +32,6 @@ const postSchema = new mongoose.Schema({
             ref: "Comment",
         },
     ],
-    createdAt: {
-        type: String,
-        default: Date.now(),
-    },
 }, { timestamps: true });
 // Index digunakan untuk meningkatkan kecepatan pencarian query dengan cara menyusun data secara lebih optimal.
 // user: 1 → Mengurutkan berdasarkan user secara ascending (A-Z).

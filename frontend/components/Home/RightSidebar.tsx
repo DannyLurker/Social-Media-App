@@ -75,7 +75,7 @@ const RightSidebar = () => {
 
   return (
     <>
-      <div className="sticky top-20 max-h-[calc(100vh-5rem)] overflow-y-auto">
+      <div className="sticky top-4 max-h-[calc(100vh-5rem)] overflow-y-auto">
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center space-x-4">
             <Avatar
