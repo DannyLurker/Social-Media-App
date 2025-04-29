@@ -59,7 +59,8 @@ const DotButton = ({ post, user }: Props) => {
   return (
     <>
       <Dialog>
-        <DialogTrigger>
+        {/* By using asChild, we tell Radix UI to use the child component's element instead of creating a new one, avoiding the nesting issue. */}
+        <DialogTrigger asChild>
           <Ellipsis className="w-8 h-8 text-black cursor-pointer" />
         </DialogTrigger>
         <DialogContent>
@@ -86,7 +87,8 @@ const DotButton = ({ post, user }: Props) => {
             )}
           </div>
 
-          <DialogClose>
+          {/* By using asChild, we tell Radix UI to use the child component's element instead of creating a new one, avoiding the nesting issue. */}
+          <DialogClose asChild>
             <Button variant={"secondary"}>Cancel</Button>
           </DialogClose>
         </DialogContent>

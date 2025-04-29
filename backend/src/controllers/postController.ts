@@ -193,7 +193,7 @@ export const deletePost = catchAsync(async (req, res, next) => {
 
 export const likeOrUnlike = catchAsync(async (req, res, next) => {
   const userId = (req as any).user._id;
-  const postId = req.params.postId;
+  const postId = req.params.postId as string;
 
   const post = await Post.findById(postId);
   if (!post) {
@@ -223,7 +223,7 @@ export const likeOrUnlike = catchAsync(async (req, res, next) => {
     return res.status(200).json({
       status: "success",
       message: "Successfully liked the post",
-      data: updatedPost,
+      data: { updatedPost },
     });
   }
 });
