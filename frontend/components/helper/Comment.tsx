@@ -13,6 +13,11 @@ import { AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { User2Icon } from "lucide-react";
 import DotButton from "./DotButton";
 import { Button } from "../ui/button";
+import axios from "axios";
+import { BASE_API_URL } from "@/server";
+import { handleAuthRequest } from "../utils/apiRequest";
+import { addComment } from "@/store/postSlice";
+import { toast } from "sonner";
 
 type Props = {
   user: User | null;
@@ -22,7 +27,27 @@ type Props = {
 const Comment = ({ user, post }: Props) => {
   const [comment, setComment] = useState("");
   const dispatch = useDispatch();
-  const addCommentHandler = async (id: string) => {};
+
+  const handleComment = async (id: string) => {
+    if (!comment) {
+      return;
+    }
+
+    const addCommentReq = async () => {
+      return await axios.post(
+        `${BASE_API_URL}/posts/add-comment/${id}`,
+        { comment },
+        { withCredentials: true }
+      );
+    };
+    const result = await handleAuthRequest(addCommentReq);
+
+    if (result?.data.status === "success") {
+      dispatch(addComment({ postId: id, comment: result?.data.comment }));
+      toast.success("Comment Posted");
+      setComment("");
+    }
+  };
   return (
     <>
       <Dialog>
@@ -112,7 +137,14 @@ const Comment = ({ user, post }: Props) => {
                       placeholder="Add a Comment"
                       className="w-full outline-none rounded border p-2 text-sm border-gray-300"
                     />
-                    <Button variant={"secondary"}>Send</Button>
+                    <Button
+                      variant={"secondary"}
+                      onClick={() => {
+                        if (post?._id) handleComment(post._id);
+                      }}
+                    >
+                      Send
+                    </Button>
                   </div>
                 </div>
               </div>

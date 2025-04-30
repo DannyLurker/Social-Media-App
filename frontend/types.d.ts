@@ -7,8 +7,8 @@ export interface User {
   bio?: string;
   followers: string[];
   following: string[];
-  posts: string[]; // Perubahan dari String[] | Post[] menjadi String[] disebakan oleh writableDraft yang tidak dapat memahami type yang terlalu kompleks
-  savePosts: string[]; // Perubahan dari String[] | Post[] menjadi String[] disebakan oleh writableDraft yang tidak dapat memahami type yang terlalu kompleks
+  posts: Post[]; // Perubahan dari String[] | Post[] menjadi String[] disebakan oleh writableDraft yang tidak dapat memahami type yang terlalu kompleks
+  savedPosts: Post[] | string[]; // Perubahan dari String[] | Post[] menjadi String[] disebakan oleh writableDraft yang tidak dapat memahami type yang terlalu kompleks
   isVerified: boolean;
 }
 

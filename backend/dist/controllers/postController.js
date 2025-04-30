@@ -121,7 +121,7 @@ export const saveOrUnsave = catchAsync((req, res, next) => __awaiter(void 0, voi
         user.savedPosts.pull(objectIdPost);
         yield user.save({ validateBeforeSave: false });
         return res.status(200).json({
-            status: "Success",
+            status: "success",
             message: "Post unsaved successfull",
             data: {
                 user,
@@ -132,7 +132,7 @@ export const saveOrUnsave = catchAsync((req, res, next) => __awaiter(void 0, voi
         user.savedPosts.push(objectIdPost);
         yield user.save({ validateBeforeSave: false });
         return res.status(200).json({
-            status: "Success",
+            status: "success",
             message: "Post saved successfull",
             data: {
                 user,
@@ -190,7 +190,7 @@ export const likeOrUnlike = catchAsync((req, res, next) => __awaiter(void 0, voi
         return res.status(200).json({
             status: "success",
             message: "Successfully liked the post",
-            data: updatedPost,
+            data: { updatedPost },
         });
     }
 }));
@@ -218,7 +218,7 @@ export const addComent = catchAsync((req, res, next) => __awaiter(void 0, void 0
         select: "username profilePicture bio",
     });
     return res.status(200).json({
-        status: "Success",
+        status: "success",
         message: "Sucessfully add a comment",
         data: {
             newComment,
@@ -246,7 +246,7 @@ export const deleteComment = catchAsync((req, res, next) => __awaiter(void 0, vo
         post.save({ validateBeforeSave: false }),
     ]);
     return res.status(200).json({
-        status: "Success",
+        status: "success",
         message: "Successfully deleted comment",
     });
 }));

@@ -133,7 +133,7 @@ export const saveOrUnsave = catchAsync(async (req, res, next) => {
     (user.savedPosts as any).pull(objectIdPost);
     await user.save({ validateBeforeSave: false });
     return res.status(200).json({
-      status: "Success",
+      status: "success",
       message: "Post unsaved successfull",
       data: {
         user,
@@ -143,7 +143,7 @@ export const saveOrUnsave = catchAsync(async (req, res, next) => {
     user.savedPosts.push(objectIdPost);
     await user.save({ validateBeforeSave: false });
     return res.status(200).json({
-      status: "Success",
+      status: "success",
       message: "Post saved successfull",
       data: {
         user,
@@ -256,7 +256,7 @@ export const addComent = catchAsync(async (req, res, next) => {
   });
 
   return res.status(200).json({
-    status: "Success",
+    status: "success",
     message: "Sucessfully add a comment",
     data: {
       newComment,
@@ -291,7 +291,7 @@ export const deleteComment = catchAsync(async (req, res, next) => {
   ]);
 
   return res.status(200).json({
-    status: "Success",
+    status: "success",
     message: "Successfully deleted comment",
   });
 });

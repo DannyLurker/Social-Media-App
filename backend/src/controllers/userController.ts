@@ -10,7 +10,7 @@ export const getProfile = catchAsync(async (req, res, next) => {
       "-password -otp -otpExpires -resetPasswordOTP -resetPasswordOTPExpires -passwordConfirm"
     )
     .populate({
-      path: "posts", //might be a problem
+      path: "posts",
       options: { sort: { createdAt: -1 } },
     })
     .populate({

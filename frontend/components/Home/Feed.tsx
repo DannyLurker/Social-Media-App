@@ -5,7 +5,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { handleAuthRequest } from "../utils/apiRequest";
-import { likeOrDislike, setPost } from "@/store/postSlice";
+import { addComment, likeOrDislike, setPost } from "@/store/postSlice";
 import {
   Bookmark,
   HeartIcon,
@@ -20,6 +20,7 @@ import DotButton from "../helper/DotButton";
 import Image from "next/image";
 import Comment from "../helper/Comment";
 import { toast } from "sonner";
+import { setAuthUser } from "@/store/authSlice";
 
 const Feed = () => {
   const dispatch = useDispatch();
@@ -56,14 +57,44 @@ const Feed = () => {
     if (result.data.status === "success") {
       if (user?._id) {
         dispatch(likeOrDislike({ postId: id, userId: user?._id }));
-        toast(result.data.message);
+        toast.success(result.data.message);
       }
     }
   };
 
-  const handleSaveUnsave = () => {};
+  const handleSaveUnsave = async (id: string) => {
+    const result = await axios.post(
+      `${BASE_API_URL}/posts/save-unsave-post/${id}`,
+      {},
+      { withCredentials: true }
+    );
 
-  const handleComment = (id: string) => {};
+    if (result.data.status === "success") {
+      dispatch(setAuthUser(result.data.data.user));
+      toast.success(result.data.message);
+    }
+  };
+
+  const handleComment = async (id: string) => {
+    if (!comment) {
+      return;
+    }
+
+    const addCommentReq = async () => {
+      return await axios.post(
+        `${BASE_API_URL}/posts/add-comment/${id}`,
+        { comment },
+        { withCredentials: true }
+      );
+    };
+    const result = await handleAuthRequest(addCommentReq, setIsLoading);
+
+    if (result?.data.status === "success") {
+      dispatch(addComment({ postId: id, comment: result?.data.comment }));
+      toast.success("Comment Posted");
+      setComment("");
+    }
+  };
 
   if (isLoading) {
     return (
@@ -118,7 +149,7 @@ const Feed = () => {
                     alt={"Post"}
                     width={400}
                     height={400}
-                    className="w-full md:w-[400px] h-auto object-cover rounded-md"
+                    className="w-full h-full object-cover"
                   />
                 </div>
                 <div className="flex mt-3 items-center justify-between">
@@ -134,7 +165,14 @@ const Feed = () => {
                     <MessageCircle className="cursor-pointer" />
                     <Send className="cursor-pointer" />
                   </div>
-                  <Bookmark className="cursor-pointer" />
+                  <Bookmark
+                    className={`cursor-pointer ${
+                      user?.savedPosts?.includes(post?._id as any)
+                        ? "text-yellow-300"
+                        : ""
+                    }`}
+                    onClick={() => handleSaveUnsave(post?._id)}
+                  />
                 </div>
                 <h1 className="mt-2 text-sm sm:text-base font-semibold">
                   {post.likes.length} likes
@@ -155,7 +193,7 @@ const Feed = () => {
                     role="button"
                     className="text-sm font-semibold text-blue-700 cursor-pointer"
                     onClick={() => {
-                      handleComment(post._id);
+                      handleComment(post?._id);
                     }}
                   >
                     Post

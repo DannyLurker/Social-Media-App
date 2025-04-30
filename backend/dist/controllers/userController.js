@@ -16,7 +16,7 @@ export const getProfile = catchAsync((req, res, next) => __awaiter(void 0, void 
     const user = yield User.findById({ _id: id })
         .select("-password -otp -otpExpires -resetPasswordOTP -resetPasswordOTPExpires -passwordConfirm")
         .populate({
-        path: "posts", //might be a problem
+        path: "posts",
         options: { sort: { createdAt: -1 } },
     })
         .populate({
