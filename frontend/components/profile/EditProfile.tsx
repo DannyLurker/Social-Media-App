@@ -19,6 +19,7 @@ import { MenuIcon, User2Icon } from "lucide-react";
 import React, { FormEvent, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
+import { Button } from "../ui/button";
 
 const EditProfile = () => {
   const dispatch = useDispatch();
@@ -141,14 +142,9 @@ const EditProfile = () => {
               onChange={handleFileChange}
             />
             <div className="flex items-center justify-center ">
-              <LoadingButton
-                isLoading={isloading}
-                size={"lg"}
-                className="bg-blue-800 mt-4"
-                onClick={handleAvatarClick}
-              >
+              <Button className="bg-blue-800 mt-4" onClick={handleAvatarClick}>
                 Change Photo
-              </LoadingButton>
+              </Button>
             </div>
           </div>
           <div className="mt-10 border-b-2 pb-10">

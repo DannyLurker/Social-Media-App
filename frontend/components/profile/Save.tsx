@@ -21,7 +21,7 @@ const Save = ({ userProfile }: Props) => {
                 alt="Post"
                 width={300}
                 height={300}
-                className={"w-full h-full object-cover"}
+                className={"w-full h-full object-cover lg:object-contain"}
               />
               <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                 <div className="flex space-x-6">

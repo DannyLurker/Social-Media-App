@@ -194,7 +194,7 @@ export const likeOrUnlike = catchAsync((req, res, next) => __awaiter(void 0, voi
         });
     }
 }));
-export const addComent = catchAsync((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+export const addComment = catchAsync((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const postId = req.params.postId;
     const userId = req.user._id;
     const user = yield User.findById(userId);

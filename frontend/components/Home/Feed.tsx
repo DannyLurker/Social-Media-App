@@ -9,7 +9,6 @@ import { addComment, likeOrDislike, setPost } from "@/store/postSlice";
 import {
   Bookmark,
   HeartIcon,
-  Loader,
   MessageCircle,
   Send,
   Users2Icon,
@@ -21,15 +20,17 @@ import Image from "next/image";
 import Comment from "../helper/Comment";
 import { toast } from "sonner";
 import { setAuthUser } from "@/store/authSlice";
+import CommentDialog from "../helper/CommentDialog";
 
 const Feed = () => {
   const dispatch = useDispatch();
-
   const user = useSelector((state: RootState) => state.auth.user);
   const posts = useSelector((state: RootState) => state.post.posts);
 
   const [comment, setComment] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [activePostId, setActivePostId] = useState<string | null>(null);
 
   useEffect(() => {
     const getAllPost = async () => {
@@ -76,9 +77,7 @@ const Feed = () => {
   };
 
   const handleComment = async (id: string) => {
-    if (!comment) {
-      return;
-    }
+    if (!comment) return;
 
     const addCommentReq = async () => {
       return await axios.post(
@@ -87,22 +86,28 @@ const Feed = () => {
         { withCredentials: true }
       );
     };
-    const result = await handleAuthRequest(addCommentReq, setIsLoading);
 
-    if (result?.data.status === "success") {
-      dispatch(addComment({ postId: id, comment: result?.data.comment }));
-      toast.success("Comment Posted");
-      setComment("");
+    try {
+      const result = await handleAuthRequest(addCommentReq);
+
+      if (result?.data.status === "success") {
+        const newComment = result.data.data.newComment;
+
+        // Update global state
+        dispatch(
+          addComment({
+            postId: id,
+            comment: newComment,
+          })
+        );
+
+        toast.success("Comment Posted");
+        setComment("");
+      }
+    } catch (error) {
+      toast.error("Failed to post comment");
     }
   };
-
-  if (isLoading) {
-    return (
-      <div className="w-full h-screen flex items-center justify-center flex-col ">
-        <Loader className="animate-spin" />
-      </div>
-    );
-  }
 
   if (posts.length < 1) {
     return (
@@ -149,7 +154,7 @@ const Feed = () => {
                     alt={"Post"}
                     width={400}
                     height={400}
-                    className="w-full h-full object-cover"
+                    className="object-cover"
                   />
                 </div>
                 <div className="flex mt-3 items-center justify-between">
@@ -162,7 +167,13 @@ const Feed = () => {
                       }`}
                       onClick={() => handleLikeOrDislike(post?._id)}
                     />
-                    <MessageCircle className="cursor-pointer" />
+                    <MessageCircle
+                      className="cursor-pointer"
+                      onClick={() => {
+                        setActivePostId(post._id);
+                        setDialogOpen(true);
+                      }}
+                    />
                     <Send className="cursor-pointer" />
                   </div>
                   <Bookmark
@@ -178,9 +189,21 @@ const Feed = () => {
                   {post.likes.length} likes
                 </h1>
                 <p className="mt-2 font-medium">{post.caption}</p>
-                {post.comments.length > 0 ? (
-                  <Comment user={user} post={post} />
-                ) : null}
+                <p className="mt-2 text-sm sm:text-base font-semibold">
+                  {post?.comments?.length ?? 0}{" "}
+                  {(post?.comments?.length ?? 0) > 1 ? "comments" : "comment"}
+                </p>
+                {activePostId === post._id && (
+                  <CommentDialog
+                    open={dialogOpen}
+                    onOpenChange={(open) => {
+                      setDialogOpen(open);
+                      if (!open) setActivePostId(null);
+                    }}
+                    post={post}
+                    user={user}
+                  />
+                )}
                 <div className="mt-2 flex items-center">
                   <input
                     type="text"

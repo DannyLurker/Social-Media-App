@@ -228,7 +228,7 @@ export const likeOrUnlike = catchAsync(async (req, res, next) => {
   }
 });
 
-export const addComent = catchAsync(async (req, res, next) => {
+export const addComment = catchAsync(async (req, res, next) => {
   const postId = req.params.postId;
   const userId = (req as any).user._id;
   const user = await User.findById(userId);
