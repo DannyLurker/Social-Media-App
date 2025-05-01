@@ -17,7 +17,6 @@ import { Avatar, AvatarFallback } from "@radix-ui/react-avatar";
 import { AvatarImage } from "../ui/avatar";
 import DotButton from "../helper/DotButton";
 import Image from "next/image";
-import Comment from "../helper/Comment";
 import { toast } from "sonner";
 import { setAuthUser } from "@/store/authSlice";
 import CommentDialog from "../helper/CommentDialog";

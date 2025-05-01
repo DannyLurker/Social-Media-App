@@ -14,7 +14,6 @@ import {
   User2Icon,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
-import { warnOptionHasBeenMovedOutOfExperimental } from "next/dist/server/config";
 
 const RightSidebar = () => {
   const user = useSelector((state: RootState) => state.auth.user);

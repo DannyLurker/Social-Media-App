@@ -50,14 +50,14 @@ const postSlice = createSlice({
     },
     deleteComment: (
       state,
-      action: PayloadAction<{ postId: string; comment: Comment }>
+      action: PayloadAction<{ postId: string; commentId: string }>
     ) => {
       const post = state.posts.find(
         (post) => post._id === action.payload.postId
       );
       if (post) {
         post.comments = post.comments.filter(
-          (postComment) => postComment._id !== action.payload.comment._id
+          (postComment) => postComment._id !== action.payload.commentId
         );
       }
     },

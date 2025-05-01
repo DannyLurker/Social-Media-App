@@ -89,7 +89,11 @@ const DotButton = ({ post, user }: Props) => {
 
           {/* By using asChild, we tell Radix UI to use the child component's element instead of creating a new one, avoiding the nesting issue. */}
           <DialogClose asChild>
-            <Button variant={"secondary"}>Cancel</Button>
+            <div className="flex justify-center">
+              <Button variant={"secondary"} className="w-fit">
+                Cancel
+              </Button>
+            </div>
           </DialogClose>
         </DialogContent>
       </Dialog>

@@ -1,7 +1,7 @@
 import { Post, User } from "@/types";
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
-import { DialogTitle, DialogTrigger } from "../ui/dialog";
+import { DialogTitle } from "../ui/dialog";
 import Image from "next/image";
 import { Avatar } from "../ui/avatar";
 import { AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
@@ -13,6 +13,7 @@ import { BASE_API_URL } from "@/server";
 import { handleAuthRequest } from "../utils/apiRequest";
 import { addComment } from "@/store/postSlice";
 import { toast } from "sonner";
+import DeleteCommentDialog from "./DeleteCommentDialog";
 
 type Props = {
   user: User | null;
@@ -96,31 +97,38 @@ const Comment = ({ user, post }: Props) => {
           </div>
           <hr />
           <div className="flex-1 overflow-y-auto max-h-96 p-4">
-            {post?.comments.map((item, index) => {
+            {post?.comments.map((item) => {
               return (
-                <div
-                  key={index + 1}
-                  className="flex mb-4 items-center space-x-2"
-                >
-                  <Avatar
-                    className={
-                      item?.user?.profilePicture
-                        ? ""
-                        : "border-gray-700 border-2 rounded-full flex justify-center items-center"
-                    }
-                  >
-                    <AvatarImage
-                      src={item?.user?.profilePicture || ""}
-                      className="h-full w-full rounded-full"
-                    />
-                    <AvatarFallback>
-                      <User2Icon />
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex items-center space-x-2">
-                    <p className="text-sm font-bold">{item?.user?.username}</p>
-                    <p className="font-normal text-sm">{item?.text}</p>
+                <div key={item._id} className="flex justify-between">
+                  <div className="flex mb-4 items-center space-x-2 ">
+                    <Avatar
+                      className={
+                        item?.user?.profilePicture
+                          ? ""
+                          : "border-gray-700 border-2 rounded-full flex justify-center items-center"
+                      }
+                    >
+                      <AvatarImage
+                        src={item?.user?.profilePicture || ""}
+                        className="h-full w-full rounded-full"
+                      />
+                      <AvatarFallback>
+                        <User2Icon />
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex items-center space-x-2">
+                      <p className="text-sm font-bold">
+                        {item?.user?.username}
+                      </p>
+                      <p className="font-normal text-sm">{item?.text}</p>
+                    </div>
                   </div>
+
+                  <DeleteCommentDialog
+                    postId={post._id}
+                    commentId={item._id}
+                    commentText={item.text}
+                  />
                 </div>
               );
             })}
