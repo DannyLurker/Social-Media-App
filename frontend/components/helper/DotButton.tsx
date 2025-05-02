@@ -16,6 +16,7 @@ import { BASE_API_URL } from "@/server";
 import { handleAuthRequest } from "../utils/apiRequest";
 import { toast } from "sonner";
 import { setAuthUser } from "@/store/authSlice";
+import { deletePost } from "@/store/postSlice";
 
 type Props = {
   post: Post | null;
@@ -23,6 +24,7 @@ type Props = {
 };
 
 const DotButton = ({ post, user }: Props) => {
+  const dispatch = useDispatch();
   const id = post?.user?._id;
   const isOwnPost = post?.user?._id === user?._id;
   const isFollowing = post?.user?._id
@@ -52,9 +54,19 @@ const DotButton = ({ post, user }: Props) => {
     }
   };
 
-  const dispatch = useDispatch();
+  const handleDeletePost = async (id: string) => {
+    const result = await axios.delete(
+      `${BASE_API_URL}/posts/delete-post/${id}`,
+      {
+        withCredentials: true,
+      }
+    );
 
-  const handleDeletePost = async () => {};
+    if (result) {
+      dispatch(deletePost(id));
+      toast.success(result.data.message);
+    }
+  };
 
   return (
     <>
@@ -81,7 +93,13 @@ const DotButton = ({ post, user }: Props) => {
               <Button variant={"secondary"}>About This Account</Button>
             </Link>
             {isOwnPost && (
-              <Button variant={"destructive"} onClick={handleDeletePost}>
+              <Button
+                variant={"destructive"}
+                // post?.id dibutuhkah karena untuk menghindari error undefined
+                onClick={() =>
+                  post?._id && handleDeletePost(post._id.toString())
+                }
+              >
                 Delete Post
               </Button>
             )}

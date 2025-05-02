@@ -45,7 +45,7 @@ const postSlice = createSlice({
         (post) => post._id === action.payload.postId
       );
       if (post) {
-        post.comments = [...post.comments, action.payload.comment];
+        post.comments.push(action.payload.comment);
       }
     },
     deleteComment: (

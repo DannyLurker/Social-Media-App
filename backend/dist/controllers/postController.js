@@ -238,8 +238,11 @@ export const deleteComment = catchAsync((req, res, next) => __awaiter(void 0, vo
         return next(new AppError("Comment not found", 404));
     if (!post)
         return next(new AppError("Post not found", 404));
-    if (user._id.toString() !== comment.user.toString())
-        return next(new AppError("You are not authorized to delete this post", 403));
+    const isOwnPost = post.user.toString() === userId.toString();
+    const isOwnComment = comment.user.toString() === userId.toString();
+    if (!isOwnComment && !isOwnPost) {
+        return next(new AppError("You are not authorized to delete this comment", 403));
+    }
     yield Promise.all([
         Comment.findByIdAndDelete(commentId),
         post.comments.pull(commentId),

@@ -68,14 +68,14 @@ const LeftSidebar = () => {
       icon: <Search />,
       label: "Search",
     },
-    {
-      icon: <MessageCircle />,
-      label: "Message",
-    },
-    {
-      icon: <Heart />,
-      label: "Notification",
-    },
+    // {
+    //   icon: <MessageCircle />,
+    //   label: "Message",
+    // },
+    // {
+    //   icon: <Heart />,
+    //   label: "Notification",
+    // },
     {
       icon: <SquarePlus />,
       label: "Create",

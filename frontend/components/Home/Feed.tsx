@@ -173,7 +173,7 @@ const Feed = () => {
                         setDialogOpen(true);
                       }}
                     />
-                    <Send className="cursor-pointer" />
+                    {/* <Send className="cursor-pointer" /> */}
                   </div>
                   <Bookmark
                     className={`cursor-pointer ${
