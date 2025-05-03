@@ -11,7 +11,7 @@ import {
   HeartIcon,
   MessageCircle,
   Send,
-  Users2Icon,
+  User2Icon,
 } from "lucide-react";
 import { Avatar, AvatarFallback } from "@radix-ui/react-avatar";
 import { AvatarImage } from "../ui/avatar";
@@ -138,7 +138,7 @@ const Feed = () => {
                       className="h-full w-full rounded-full"
                     />
                     <AvatarFallback>
-                      <Users2Icon className="w-[10rem] h-[10rem]" />
+                      <User2Icon />
                     </AvatarFallback>
                   </Avatar>
                   <h1>{post.user?.username}</h1>

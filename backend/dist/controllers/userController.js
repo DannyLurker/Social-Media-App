@@ -75,6 +75,36 @@ export const suggestedUser = catchAsync((req, res, next) => __awaiter(void 0, vo
         },
     });
 }));
+export const changeUserRole = catchAsync((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const userId = req.user.id;
+    const { targettedUserId } = req.body;
+    const userAccount = yield User.findOne({ _id: userId });
+    const targettedUserAccount = yield User.findOne({ _id: targettedUserId });
+    if (!userAccount) {
+        return next(new AppError("User not found", 404));
+    }
+    if (!targettedUserAccount) {
+        return next(new AppError("User not found", 404));
+    }
+    if ((userAccount === null || userAccount === void 0 ? void 0 : userAccount.role) !== "admin" && (userAccount === null || userAccount === void 0 ? void 0 : userAccount.role) !== "owner") {
+        return next(new AppError("You are not authorized to change user role", 403));
+    }
+    if ((userAccount === null || userAccount === void 0 ? void 0 : userAccount.role) === "admin" && (targettedUserAccount === null || targettedUserAccount === void 0 ? void 0 : targettedUserAccount.role) === "owner") {
+        return next(new AppError("You are not authorized to change owner role", 403));
+    }
+    if (targettedUserAccount.role === "user") {
+        targettedUserAccount.role = "admin";
+        targettedUserAccount === null || targettedUserAccount === void 0 ? void 0 : targettedUserAccount.save({ validateBeforeSave: false });
+    }
+    else {
+        targettedUserAccount.role = "user";
+        targettedUserAccount === null || targettedUserAccount === void 0 ? void 0 : targettedUserAccount.save({ validateBeforeSave: false });
+    }
+    res.status(200).json({
+        status: "Success",
+        message: "Succesfully change user role",
+    });
+}));
 export const findUser = catchAsync((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { search } = req.query;
     if (!search) {
@@ -88,6 +118,7 @@ export const findUser = catchAsync((req, res, next) => __awaiter(void 0, void 0,
     }).select("-password");
     res.status(200).json({
         status: "Success",
+        message: "successfully search",
         data: { users },
     });
 }));

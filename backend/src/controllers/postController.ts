@@ -154,7 +154,7 @@ export const saveOrUnsave = catchAsync(async (req, res, next) => {
 
 export const deletePost = catchAsync(async (req, res, next) => {
   const { id } = req.params;
-  const userId = (req as any).user._id;
+  const user = (req as any).user;
 
   const post = await Post.findById(id).populate("user");
 
@@ -162,24 +162,32 @@ export const deletePost = catchAsync(async (req, res, next) => {
     return next(new AppError("Post not found", 404));
   }
 
-  if (post.user._id.toString() !== userId.toString()) {
+  if (
+    post.user._id.toString() !== user._id.toString() &&
+    user.role !== "admin" &&
+    user.role !== "owner"
+  ) {
     return next(
       new AppError("You are not authorized to delete this post", 403)
     );
   }
 
   // Remove this post from user posts
-  await User.updateOne({ _id: userId }, { $pull: { post: id } });
+  await User.updateOne({ _id: user._id }, { $pull: { posts: id } });
 
   // Remove this post from user save list
   await User.updateMany({ savedPosts: id }, { $pull: { savedPosts: id } });
 
-  // Remove the comment of this post
-  await Comment.deleteMany({ post: id });
+  // Remove the comments of this post
+  await Comment.deleteMany({ _id: { $in: post.comments } });
 
-  // Remove from cloudinary
+  // Remove image from cloudinary
   if (post.image?.publicId) {
-    await cloudinary.uploader.destroy(post.image.publicId);
+    try {
+      await cloudinary.uploader.destroy(post.image.publicId);
+    } catch (err) {
+      console.error("Failed to delete image from Cloudinary:", err);
+    }
   }
 
   // Remove the post
@@ -282,14 +290,19 @@ export const deleteComment = catchAsync(async (req, res, next) => {
   const isOwnPost = post.user.toString() === userId.toString();
   const isOwnComment = comment.user.toString() === userId.toString();
 
-  if (!isOwnComment && !isOwnPost) {
+  if (
+    !isOwnComment &&
+    !isOwnPost &&
+    user.role !== "admin" &&
+    user.role !== "owner"
+  ) {
     return next(
       new AppError("You are not authorized to delete this comment", 403)
     );
   }
 
   await Promise.all([
-    Comment.findByIdAndDelete(commentId),
+    Comment.findByIdAndDelete(commentId, { $new: true }),
     (post as any).comments.pull(commentId),
     post.save({ validateBeforeSave: false }),
   ]);

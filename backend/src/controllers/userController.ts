@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { User } from "../models/userModel.js";
 import AppError from "../utils/appError.js";
 import catchAsync from "../utils/catchAsync.js";
@@ -82,6 +83,46 @@ export const suggestedUser = catchAsync(async (req, res, next) => {
   });
 });
 
+export const changeUserRole = catchAsync(async (req, res, next) => {
+  const userId = (req as any).user.id;
+  const { targettedUserId } = req.body;
+  const userAccount = await User.findOne({ _id: userId });
+  const targettedUserAccount = await User.findOne({ _id: targettedUserId });
+
+  if (!userAccount) {
+    return next(new AppError("User not found", 404));
+  }
+
+  if (!targettedUserAccount) {
+    return next(new AppError("User not found", 404));
+  }
+
+  if (userAccount?.role !== "admin" && userAccount?.role !== "owner") {
+    return next(
+      new AppError("You are not authorized to change user role", 403)
+    );
+  }
+
+  if (userAccount?.role === "admin" && targettedUserAccount?.role === "owner") {
+    return next(
+      new AppError("You are not authorized to change owner role", 403)
+    );
+  }
+
+  if (targettedUserAccount.role === "user") {
+    targettedUserAccount.role = "admin";
+    targettedUserAccount?.save({ validateBeforeSave: false });
+  } else {
+    targettedUserAccount.role = "user";
+    targettedUserAccount?.save({ validateBeforeSave: false });
+  }
+
+  res.status(200).json({
+    status: "Success",
+    message: "Succesfully change user role",
+  });
+});
+
 export const findUser = catchAsync(async (req, res, next) => {
   const { search } = req.query;
 
@@ -98,6 +139,7 @@ export const findUser = catchAsync(async (req, res, next) => {
 
   res.status(200).json({
     status: "Success",
+    message: "successfully search",
     data: { users },
   });
 });

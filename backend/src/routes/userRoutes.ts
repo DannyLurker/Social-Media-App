@@ -11,6 +11,7 @@ import {
 } from "../controllers/authController.js";
 import { isAuthenticated } from "../middleware/isAuthenticated.js";
 import {
+  changeUserRole,
   editProfile,
   findUser,
   followUnFollow,
@@ -40,6 +41,7 @@ router.post(
   upload.single("profilePicture"),
   editProfile
 );
+router.post("/change-role", isAuthenticated, changeUserRole);
 router.get("/suggested-user", isAuthenticated, suggestedUser);
 router.get("/find-user", findUser);
 router.post("/follow-unfollow/:id", isAuthenticated, followUnFollow);

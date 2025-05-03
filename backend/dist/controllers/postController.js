@@ -143,23 +143,30 @@ export const saveOrUnsave = catchAsync((req, res, next) => __awaiter(void 0, voi
 export const deletePost = catchAsync((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     const { id } = req.params;
-    const userId = req.user._id;
+    const user = req.user;
     const post = yield Post.findById(id).populate("user");
     if (!post) {
         return next(new AppError("Post not found", 404));
     }
-    if (post.user._id.toString() !== userId.toString()) {
+    if (post.user._id.toString() !== user._id.toString() &&
+        user.role !== "admin" &&
+        user.role !== "owner") {
         return next(new AppError("You are not authorized to delete this post", 403));
     }
     // Remove this post from user posts
-    yield User.updateOne({ _id: userId }, { $pull: { post: id } });
+    yield User.updateOne({ _id: user._id }, { $pull: { posts: id } });
     // Remove this post from user save list
     yield User.updateMany({ savedPosts: id }, { $pull: { savedPosts: id } });
-    // Remove the comment of this post
-    yield Comment.deleteMany({ post: id });
-    // Remove from cloudinary
+    // Remove the comments of this post
+    yield Comment.deleteMany({ _id: { $in: post.comments } });
+    // Remove image from cloudinary
     if ((_a = post.image) === null || _a === void 0 ? void 0 : _a.publicId) {
-        yield cloudinary.uploader.destroy(post.image.publicId);
+        try {
+            yield cloudinary.uploader.destroy(post.image.publicId);
+        }
+        catch (err) {
+            console.error("Failed to delete image from Cloudinary:", err);
+        }
     }
     // Remove the post
     yield Post.findByIdAndDelete(id);
@@ -240,11 +247,14 @@ export const deleteComment = catchAsync((req, res, next) => __awaiter(void 0, vo
         return next(new AppError("Post not found", 404));
     const isOwnPost = post.user.toString() === userId.toString();
     const isOwnComment = comment.user.toString() === userId.toString();
-    if (!isOwnComment && !isOwnPost) {
+    if (!isOwnComment &&
+        !isOwnPost &&
+        user.role !== "admin" &&
+        user.role !== "owner") {
         return next(new AppError("You are not authorized to delete this comment", 403));
     }
     yield Promise.all([
-        Comment.findByIdAndDelete(commentId),
+        Comment.findByIdAndDelete(commentId, { $new: true }),
         post.comments.pull(commentId),
         post.save({ validateBeforeSave: false }),
     ]);

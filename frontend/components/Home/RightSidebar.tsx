@@ -94,7 +94,7 @@ const RightSidebar = () => {
             </Avatar>
             <div>
               <h1 className="font-bold">{user?.username || "Guest"}</h1>
-              <p className="text-gray-700">{user?.bio || ""}</p>
+              <p className="text-gray-700">{user?.bio || "Nexora User"}</p>
             </div>
           </div>
         </div>

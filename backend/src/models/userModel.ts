@@ -53,6 +53,11 @@ const userSchema = new mongoose.Schema(
         message: "Password are not the same",
       },
     },
+    role: {
+      type: String,
+      required: false,
+      default: "user",
+    },
     profilePicture: {
       type: String,
     },

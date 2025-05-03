@@ -8,7 +8,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Ellipsis } from "lucide-react";
+import { Ellipsis, Loader } from "lucide-react";
 import { Button } from "../ui/button";
 import Link from "next/link";
 import axios from "axios";
@@ -55,54 +55,68 @@ const DotButton = ({ post, user }: Props) => {
   };
 
   const handleDeletePost = async (id: string) => {
-    const result = await axios.delete(
-      `${BASE_API_URL}/posts/delete-post/${id}`,
-      {
-        withCredentials: true,
-      }
-    );
+    try {
+      setIsLoading(true);
+      const result = await axios.delete(
+        `${BASE_API_URL}/posts/delete-post/${id}`,
+        {
+          withCredentials: true,
+        }
+      );
 
-    if (result) {
-      dispatch(deletePost(id));
-      toast.success(result.data.message);
+      if (result) {
+        setIsLoading(false);
+        dispatch(deletePost(id));
+        toast.success(result.data.message);
+      }
+    } catch (e) {
+      setIsLoading(false);
     }
   };
 
   return (
     <>
       <Dialog>
-        {/* By using asChild, we tell Radix UI to use the child component's element instead of creating a new one, avoiding the nesting issue. */}
         <DialogTrigger asChild>
           <Ellipsis className="w-8 h-8 text-black cursor-pointer" />
         </DialogTrigger>
         <DialogContent>
           <DialogTitle></DialogTitle>
-          <div className="space-y-4 flex flex-col w-fit justify-center items-center mx-auto">
-            {!isOwnPost && (
-              <div>
-                <Button
-                  className="cursor-pointer"
-                  variant={isFollowing ? "destructive" : "secondary"}
-                  onClick={handleFollowUnfollow}
-                >
-                  {isFollowing ? "Unfollow" : "Follow"}
-                </Button>
+          <div className="relative">
+            {isLoading && (
+              <div className="absolute inset-0 z-50 bg-white/80 flex items-center justify-center">
+                <Loader className="animate-spin w-10 h-10 text-gray-700" />
               </div>
             )}
-            <Link href={`/profile/${post?.user?._id}`}>
-              <Button variant={"secondary"}>About This Account</Button>
-            </Link>
-            {isOwnPost && (
-              <Button
-                variant={"destructive"}
-                // post?.id dibutuhkah karena untuk menghindari error undefined
-                onClick={() =>
-                  post?._id && handleDeletePost(post._id.toString())
-                }
-              >
-                Delete Post
-              </Button>
-            )}
+            <div className="space-y-4 flex flex-col w-fit justify-center items-center mx-auto">
+              <div className="space-y-4 flex flex-col w-fit justify-center items-center mx-auto">
+                {!isOwnPost && (
+                  <div>
+                    <Button
+                      className="cursor-pointer"
+                      variant={isFollowing ? "destructive" : "secondary"}
+                      onClick={handleFollowUnfollow}
+                    >
+                      {isFollowing ? "Unfollow" : "Follow"}
+                    </Button>
+                  </div>
+                )}
+                <Link href={`/profile/${post?.user?._id}`}>
+                  <Button variant={"secondary"}>About This Account</Button>
+                </Link>
+                {isOwnPost && (
+                  <Button
+                    variant={"destructive"}
+                    // post?.id dibutuhkah karena untuk menghindari error undefined
+                    onClick={() =>
+                      post?._id && handleDeletePost(post._id.toString())
+                    }
+                  >
+                    Delete Post
+                  </Button>
+                )}
+              </div>
+            </div>
           </div>
 
           {/* By using asChild, we tell Radix UI to use the child component's element instead of creating a new one, avoiding the nesting issue. */}

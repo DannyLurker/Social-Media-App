@@ -3,6 +3,7 @@ export interface User {
   username: string;
   email: string;
   password?: string;
+  role?: string;
   profilePicture?: string;
   bio?: string;
   followers: string[];
