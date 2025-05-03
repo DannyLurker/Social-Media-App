@@ -97,7 +97,6 @@ const RightSidebar = () => {
               <p className="text-gray-700">{user?.bio || ""}</p>
             </div>
           </div>
-          <h1 className="font-medium text-blue-700 cursor-pointer">Switch</h1>
         </div>
         <div className="flex items-center justify-between">
           <div className="flex space-x-6">

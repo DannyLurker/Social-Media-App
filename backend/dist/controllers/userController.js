@@ -75,6 +75,22 @@ export const suggestedUser = catchAsync((req, res, next) => __awaiter(void 0, vo
         },
     });
 }));
+export const findUser = catchAsync((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { search } = req.query;
+    if (!search) {
+        return res.status(200).json({
+            status: "Success",
+            data: { users: [] },
+        });
+    }
+    const users = yield User.find({
+        username: { $regex: search, $options: "i" },
+    }).select("-password");
+    res.status(200).json({
+        status: "Success",
+        data: { users },
+    });
+}));
 export const followUnFollow = catchAsync((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const loginUserId = req.user.id;
     const targetUserId = req.params.id;

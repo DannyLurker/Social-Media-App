@@ -4,6 +4,7 @@ import { RootState } from "@/store/store";
 import {
   Heart,
   HomeIcon,
+  InfoIcon,
   LogOutIcon,
   MessageCircle,
   Search,
@@ -20,13 +21,18 @@ import axios from "axios";
 import { toast } from "sonner";
 import { setAuthUser } from "@/store/authSlice";
 import CreatePostModel from "./CreatePostModel";
+import InformationDialog from "./InformationDialog";
+import SearchDialog from "./SearchDialog";
 
 const LeftSidebar = () => {
   const user = useSelector((state: RootState) => state.auth.user);
   const dispatch = useDispatch();
   const router = useRouter();
 
-  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
+  const [isCreateDialogOpen, setCreateIsDialogOpen] = useState<boolean>(false);
+  const [isInformationDialogOpen, setIsInformationDialogOpen] =
+    useState<boolean>(false);
+  const [isSearchDialogOpen, setIsSearchDialogOpen] = useState<boolean>(false);
 
   const handleLogout = async () => {
     const logoutReq = async () => {
@@ -56,7 +62,9 @@ const LeftSidebar = () => {
       }
       router.push(`/profile/${user._id}`);
     }
-    if (label === "Create") setIsDialogOpen(true);
+    if (label === "Create") setCreateIsDialogOpen(true);
+    if (label === "Information") setIsInformationDialogOpen(true);
+    if (label === "Search") setIsSearchDialogOpen(true);
   };
 
   const sidebarLinks = [
@@ -99,14 +107,26 @@ const LeftSidebar = () => {
       icon: <LogOutIcon />,
       label: "Logout",
     },
+    {
+      icon: <InfoIcon />,
+      label: "Information",
+    },
   ];
 
   return (
     <>
       <div className="h-full ">
         <CreatePostModel
-          isOpen={isDialogOpen}
-          onClose={() => setIsDialogOpen(false)}
+          isOpen={isCreateDialogOpen}
+          onClose={() => setCreateIsDialogOpen(false)}
+        />
+        <InformationDialog
+          isOpen={isInformationDialogOpen}
+          onClose={() => setIsInformationDialogOpen(false)}
+        />
+        <SearchDialog
+          isOpen={isSearchDialogOpen}
+          onClose={() => setIsSearchDialogOpen(false)}
         />
         <div
           onClick={() => router.push("/")}
