@@ -17,10 +17,10 @@ import { BASE_API_URL } from "@/server";
 import { Button } from "../ui/button";
 import { Avatar, AvatarFallback } from "@radix-ui/react-avatar";
 import { AvatarImage } from "../ui/avatar";
-import { handleAuthRequest } from "../utils/apiRequest";
 import { toast } from "sonner";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
+import UserSettingsButton from "../helper/UserSettingsButton";
 
 const AdminPanel = () => {
   const user = useSelector((state: RootState) => state.auth.user);
@@ -30,25 +30,6 @@ const AdminPanel = () => {
   const [userList, setUserList] = useState<User[]>([]);
   const searchParams = useSearchParams();
   const searchValue = searchParams.get("search") || "";
-
-  const handleChangeAdmin = async (userTargettedId: string) => {
-    const handleChangeAdminReq = async () => {
-      return await axios.post(
-        `${BASE_API_URL}/users/change-role`,
-        {
-          targettedUserId: userTargettedId,
-        },
-        { withCredentials: true }
-      );
-    };
-
-    const result = await handleAuthRequest(handleChangeAdminReq, setIsLoading);
-
-    if (result) {
-      toast.success("Succesfully change user role");
-      location.reload();
-    }
-  };
 
   const findUser = async () => {
     try {
@@ -104,15 +85,11 @@ const AdminPanel = () => {
           </div>
           <div className="relative">
             <div className="flex w-full h-[75vh] justify-center items-center">
-              <div className="h-[300px] w-[350px] max-h-[400px] border-2 p-2">
+              <div className="h-[300px] w-[350px] max-h-[400px] sm:w=[450px] sm:h-[450px] md:w-[600px] md:h-[700px]  border-2 p-2">
                 <div className="p-2">
                   <h1 className="font-bold text-center">Admin Panel</h1>
                 </div>
-                {isLoading && (
-                  <div className="absolute inset-0 z-50 bg-white/80 flex items-center justify-center">
-                    <Loader className="animate-spin w-10 h-10 text-gray-700" />
-                  </div>
-                )}
+
                 <div className="flex flex-col gap-2">
                   <input
                     type="text"
@@ -154,19 +131,7 @@ const AdminPanel = () => {
                               </p>
                             </div>
                           </div>
-                          {user.role == "owner" ? (
-                            ""
-                          ) : user.role == "admin" ? (
-                            <Button onClick={() => handleChangeAdmin(user._id)}>
-                              User
-                            </Button>
-                          ) : user.role == "user" ? (
-                            <Button onClick={() => handleChangeAdmin(user._id)}>
-                              Admin
-                            </Button>
-                          ) : (
-                            ""
-                          )}
+                          <UserSettingsButton user={user} />
                         </div>
                       </div>
                     );
