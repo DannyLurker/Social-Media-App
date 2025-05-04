@@ -2,7 +2,9 @@ import mongoose from "mongoose";
 import { User } from "../models/userModel.js";
 import AppError from "../utils/appError.js";
 import catchAsync from "../utils/catchAsync.js";
-import { uploadToCloudinary } from "../utils/cloudinary.js";
+import { cloudinary, uploadToCloudinary } from "../utils/cloudinary.js";
+import { Post } from "../models/postModel.js";
+import { Comment } from "../models/commentModel.js";
 
 export const getProfile = catchAsync(async (req, res, next) => {
   const { id } = req.params;
@@ -54,7 +56,17 @@ export const editProfile = catchAsync(async (req, res, next) => {
   }
   if (bio) user.bio = bio;
   // Ketika kamu mengunggah gambar ke Cloudinary, respons (cloudResponse) yang dikembalikan biasanya berisi properti secure_url. Properti ini berisi URL gambar yang dapat diakses melalui HTTPS, sehingga aman untuk digunakan di aplikasi.
-  if (profilePicture) user.profilePicture = cloudResponse?.secure_url;
+
+  // Diperlukan if statement dengan berbagai pengecekan untuk menghindari error dari TS seperti string tidak sama dengan undefined
+  if (profilePicture && user.profilePicture && cloudResponse?.secure_url) {
+    user.profilePicture = {
+      url: cloudResponse.secure_url,
+      publicId: cloudResponse.public_id,
+    };
+  }
+
+  console.log(user.profilePicture?.url);
+  console.log(user.profilePicture?.publicId);
 
   await user.save({ validateBeforeSave: false });
 
@@ -215,5 +227,69 @@ export const getMe = catchAsync(async (req, res, next) => {
     data: {
       user,
     },
+  });
+});
+
+export const deleteUserAccount = catchAsync(async (req, res, next) => {
+  const userId = (req as any).user._id;
+  const targettedUserId = req.params.id;
+
+  const userAccount = await User.findOne({ _id: userId });
+  const targettedUserAccount = await User.findOne({ _id: targettedUserId });
+
+  if (!userAccount && !targettedUserAccount) {
+    return next(new AppError("User not found", 404));
+  }
+
+  if (userAccount?.role !== "admin" && userAccount?.role !== "owner") {
+    return next(
+      new AppError("You're not authorized to delete others account", 403)
+    );
+  }
+
+  await Post.updateMany(
+    {},
+    {
+      $pull: {
+        likes: targettedUserAccount?._id,
+        comments: targettedUserAccount?._id,
+      },
+    }
+  );
+
+  await Post.deleteMany({ user: targettedUserAccount?._id });
+
+  await Comment.deleteMany({ user: targettedUserAccount?._id });
+
+  const userPosts = await Post.find({ user: targettedUserAccount?._id });
+
+  for (const post of userPosts) {
+    if (post.image?.publicId) {
+      try {
+        await cloudinary.uploader.destroy(post.image.publicId);
+      } catch (err) {
+        console.error("Failed to delete image from Cloudinary:", err);
+      }
+    }
+  }
+
+  if (
+    targettedUserAccount?.profilePicture &&
+    typeof targettedUserAccount.profilePicture.publicId === "string"
+  ) {
+    try {
+      await cloudinary.uploader.destroy(
+        targettedUserAccount.profilePicture.publicId
+      );
+    } catch (err) {
+      console.error("Failed to delete image from Cloudinary:", err);
+    }
+  }
+
+  await User.findByIdAndDelete(targettedUserId, { $new: true });
+
+  res.status(200).json({
+    status: "success",
+    message: "Succesfully deleted user",
   });
 });

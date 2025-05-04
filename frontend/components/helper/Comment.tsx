@@ -74,13 +74,13 @@ const Comment = ({ user, post }: Props) => {
             <div className="flex gap-3 items-center">
               <Avatar
                 className={
-                  user?.profilePicture
+                  post?.user?.profilePicture
                     ? ""
                     : "border-gray-700 border-2 rounded-full flex justify-center items-center"
                 }
               >
                 <AvatarImage
-                  src={user?.profilePicture || ""}
+                  src={post?.user?.profilePicture?.url}
                   className="h-full w-full rounded-full"
                 />
                 <AvatarFallback>
@@ -89,7 +89,7 @@ const Comment = ({ user, post }: Props) => {
               </Avatar>
               <div>
                 <p className="font-semibold text-sm sm:text-base">
-                  {user?.username}
+                  {post?.user?.username}
                 </p>
               </div>
             </div>
@@ -109,7 +109,7 @@ const Comment = ({ user, post }: Props) => {
                       }
                     >
                       <AvatarImage
-                        src={item?.user?.profilePicture || ""}
+                        src={item.user?.profilePicture?.url}
                         className="h-full w-full rounded-full"
                       />
                       <AvatarFallback>

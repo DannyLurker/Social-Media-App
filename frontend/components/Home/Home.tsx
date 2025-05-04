@@ -23,6 +23,7 @@ const Home = () => {
   const dispatch = useDispatch();
 
   const user = useSelector((state: RootState) => state.auth.user);
+  console.log(user);
 
   const [isLoading, setIsLoading] = useState(false);
 

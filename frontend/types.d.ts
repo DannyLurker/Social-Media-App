@@ -4,7 +4,10 @@ export interface User {
   email: string;
   password?: string;
   role?: string;
-  profilePicture?: string;
+  profilePicture?: {
+    url: string;
+    publicId: string;
+  };
   bio?: string;
   followers: string[];
   following: string[];
@@ -19,7 +22,10 @@ export interface Comment {
   user: {
     _id: string;
     username: string;
-    profilePicture: string;
+    profilePicture?: {
+      url: string;
+      publicId: string;
+    };
   };
   createdAt: string;
 }

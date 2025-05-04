@@ -25,7 +25,7 @@ const EditProfile = () => {
   const dispatch = useDispatch();
   const user = useSelector((state: RootState) => state.auth.user);
   const [selectedImage, setSelectedImage] = useState<string | null>(
-    user?.profilePicture || null
+    user?.profilePicture?.url || null
   );
   const [username, setUsername] = useState(user?.username || "");
   const [bio, setBio] = useState(user?.bio || "");
@@ -125,7 +125,7 @@ const EditProfile = () => {
                 }
               >
                 <AvatarImage
-                  src={selectedImage || ""}
+                  src={selectedImage ?? undefined}
                   className="h-full w-full rounded-full"
                 />
                 <AvatarFallback>

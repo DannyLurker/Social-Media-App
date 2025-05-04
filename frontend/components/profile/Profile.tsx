@@ -120,7 +120,7 @@ const Profile = ({ id }: Props) => {
                 }
               >
                 <AvatarImage
-                  src={`${userProfile?.profilePicture}`}
+                  src={userProfile?.profilePicture?.url}
                   className="h-full w-full rounded-full"
                 />
                 <AvatarFallback>

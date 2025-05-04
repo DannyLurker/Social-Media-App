@@ -93,7 +93,7 @@ const LeftSidebar = () => {
         // Tanpa flex, elemen anak mungkin tidak akan menyesuaikan ukurannya dengan container, sehingga gambar tidak akan mengikuti ukuran w-9 h-9.
         <Avatar className="w-9 h-9 flex justify-center items-center">
           <AvatarImage
-            src={user?.profilePicture}
+            src={user?.profilePicture?.url}
             className="h-full w-full rounded-full"
           />
           <AvatarFallback>

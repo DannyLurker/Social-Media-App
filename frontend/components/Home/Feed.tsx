@@ -134,7 +134,7 @@ const Feed = () => {
                     }
                   >
                     <AvatarImage
-                      src={`${post.user?.profilePicture}`}
+                      src={post.user?.profilePicture?.url}
                       className="h-full w-full rounded-full"
                     />
                     <AvatarFallback>

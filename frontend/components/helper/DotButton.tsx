@@ -24,6 +24,7 @@ type Props = {
 };
 
 const DotButton = ({ post, user }: Props) => {
+  console.log(user);
   const dispatch = useDispatch();
   const id = post?.user?._id;
   const isOwnPost = post?.user?._id === user?._id;

@@ -10,7 +10,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 import { User } from "../models/userModel.js";
 import AppError from "../utils/appError.js";
 import catchAsync from "../utils/catchAsync.js";
-import { uploadToCloudinary } from "../utils/cloudinary.js";
+import { cloudinary, uploadToCloudinary } from "../utils/cloudinary.js";
+import { Post } from "../models/postModel.js";
+import { Comment } from "../models/commentModel.js";
 export const getProfile = catchAsync((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     const user = yield User.findById({ _id: id })
@@ -34,6 +36,7 @@ export const getProfile = catchAsync((req, res, next) => __awaiter(void 0, void 
     });
 }));
 export const editProfile = catchAsync((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b;
     const userId = req.user.id;
     const { bio, username } = req.body;
     const profilePicture = req.file;
@@ -53,8 +56,15 @@ export const editProfile = catchAsync((req, res, next) => __awaiter(void 0, void
     if (bio)
         user.bio = bio;
     // Ketika kamu mengunggah gambar ke Cloudinary, respons (cloudResponse) yang dikembalikan biasanya berisi properti secure_url. Properti ini berisi URL gambar yang dapat diakses melalui HTTPS, sehingga aman untuk digunakan di aplikasi.
-    if (profilePicture)
-        user.profilePicture = cloudResponse === null || cloudResponse === void 0 ? void 0 : cloudResponse.secure_url;
+    // Diperlukan if statement dengan berbagai pengecekan untuk menghindari error dari TS seperti string tidak sama dengan undefined
+    if (profilePicture && user.profilePicture && (cloudResponse === null || cloudResponse === void 0 ? void 0 : cloudResponse.secure_url)) {
+        user.profilePicture = {
+            url: cloudResponse.secure_url,
+            publicId: cloudResponse.public_id,
+        };
+    }
+    console.log((_a = user.profilePicture) === null || _a === void 0 ? void 0 : _a.url);
+    console.log((_b = user.profilePicture) === null || _b === void 0 ? void 0 : _b.publicId);
     yield user.save({ validateBeforeSave: false });
     return res.status(200).json({
         message: "Profile Updated",
@@ -174,5 +184,51 @@ export const getMe = catchAsync((req, res, next) => __awaiter(void 0, void 0, vo
         data: {
             user,
         },
+    });
+}));
+export const deleteUserAccount = catchAsync((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    const userId = req.user._id;
+    const targettedUserId = req.params.id;
+    const userAccount = yield User.findOne({ _id: userId });
+    const targettedUserAccount = yield User.findOne({ _id: targettedUserId });
+    if (!userAccount && !targettedUserAccount) {
+        return next(new AppError("User not found", 404));
+    }
+    if ((userAccount === null || userAccount === void 0 ? void 0 : userAccount.role) !== "admin" && (userAccount === null || userAccount === void 0 ? void 0 : userAccount.role) !== "owner") {
+        return next(new AppError("You're not authorized to delete others account", 403));
+    }
+    yield Post.updateMany({}, {
+        $pull: {
+            likes: targettedUserAccount === null || targettedUserAccount === void 0 ? void 0 : targettedUserAccount._id,
+            comments: targettedUserAccount === null || targettedUserAccount === void 0 ? void 0 : targettedUserAccount._id,
+        },
+    });
+    yield Post.deleteMany({ user: targettedUserAccount === null || targettedUserAccount === void 0 ? void 0 : targettedUserAccount._id });
+    yield Comment.deleteMany({ user: targettedUserAccount === null || targettedUserAccount === void 0 ? void 0 : targettedUserAccount._id });
+    const userPosts = yield Post.find({ user: targettedUserAccount === null || targettedUserAccount === void 0 ? void 0 : targettedUserAccount._id });
+    for (const post of userPosts) {
+        if ((_a = post.image) === null || _a === void 0 ? void 0 : _a.publicId) {
+            try {
+                yield cloudinary.uploader.destroy(post.image.publicId);
+            }
+            catch (err) {
+                console.error("Failed to delete image from Cloudinary:", err);
+            }
+        }
+    }
+    if ((targettedUserAccount === null || targettedUserAccount === void 0 ? void 0 : targettedUserAccount.profilePicture) &&
+        typeof targettedUserAccount.profilePicture.publicId === "string") {
+        try {
+            yield cloudinary.uploader.destroy(targettedUserAccount.profilePicture.publicId);
+        }
+        catch (err) {
+            console.error("Failed to delete image from Cloudinary:", err);
+        }
+    }
+    yield User.findByIdAndDelete(targettedUserId, { $new: true });
+    res.status(200).json({
+        status: "success",
+        message: "Succesfully deleted user",
     });
 }));

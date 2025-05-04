@@ -12,6 +12,7 @@ import {
 import { isAuthenticated } from "../middleware/isAuthenticated.js";
 import {
   changeUserRole,
+  deleteUserAccount,
   editProfile,
   findUser,
   followUnFollow,
@@ -46,5 +47,6 @@ router.get("/suggested-user", isAuthenticated, suggestedUser);
 router.get("/find-user", findUser);
 router.post("/follow-unfollow/:id", isAuthenticated, followUnFollow);
 router.get("/me", isAuthenticated, getMe);
+router.delete("/delete-account/:id", isAuthenticated, deleteUserAccount);
 
 export default router;

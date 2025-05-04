@@ -55,11 +55,18 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      required: false,
+      required: true,
       default: "user",
     },
     profilePicture: {
-      type: String,
+      url: {
+        type: String,
+        required: false,
+      },
+      publicId: {
+        type: String,
+        required: false,
+      },
     },
     bio: {
       type: String,
