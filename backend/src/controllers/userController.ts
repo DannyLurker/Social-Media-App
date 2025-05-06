@@ -247,21 +247,65 @@ export const deleteUserAccount = catchAsync(async (req, res, next) => {
     );
   }
 
+  const userPost = await Post.find({ user: targettedUserAccount?._id });
+  const userPostIds = userPost.map((userPost) => userPost?._id);
+
+  await User.updateMany(
+    {},
+    {
+      $pull: {
+        followers: targettedUserAccount?._id,
+        following: targettedUserAccount?._id,
+        savedPosts: { $in: userPostIds },
+      },
+    }
+  );
+
+  // Kenapa pada pull likes tidak perlu dibuat kedalam array seperti userCommentIds ? Karena pada likes, user hanya bisa memberikan satu like pada setiap postingan, jadi idnya hanya akan ada satu, berbeda dengan comment yang dapat di berikan secara banyak, maka akan ada lebih dari satu id yang jadi perlu dilakukan .find terlebih dahulu baru di map, dan terakhir dilakukan ini { $in: userCommentIds }
+
+  const userComments = await Comment.find({ user: targettedUserAccount?._id });
+  const userCommentIds = userComments.map((c) => c._id);
+
   await Post.updateMany(
     {},
     {
       $pull: {
         likes: targettedUserAccount?._id,
-        comments: targettedUserAccount?._id,
+        comments: { $in: userCommentIds },
       },
     }
   );
 
+  // Kenapa menggunakan flatMap ? jika menggunakan map dengan code seperti ini
+  // const ids = userPost.map(post => post.comments.map(c => c._id));
+  // akan menghasilkan hasil seperti ini :
+  //    [
+  //   [id1, id2],   // dari post 1
+  //   [id3],        // dari post 2
+  //   [id4, id5, id6], // dari post 3
+  //   ...
+  // ]
+
+  //Jika menggunakan flatMap, dengan code seperti ini :
+  // const ids = userPost.flatMap(post => post.comments.map(c => c._id));
+  // Hasilnya akan seperti ini :
+  // [id1, id2, id3, id4, id5, id6, ...]
+
+  const userPostCommentsIds = userPost.flatMap((userPost) =>
+    Array.isArray(userPost?.comments)
+      ? userPost.comments.map((comment: any) => comment?._id)
+      : []
+  );
+
   await Post.deleteMany({ user: targettedUserAccount?._id });
 
-  await Comment.deleteMany({ user: targettedUserAccount?._id });
+  await Comment.deleteMany({
+    user: targettedUserAccount?._id,
+    _id: { $in: userPostCommentsIds },
+  });
 
   const userPosts = await Post.find({ user: targettedUserAccount?._id });
+  console.log(userPosts);
 
   for (const post of userPosts) {
     if (post.image?.publicId) {

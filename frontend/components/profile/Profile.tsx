@@ -132,6 +132,17 @@ const Profile = ({ id }: Props) => {
                   <h1 className="text-2xl font-bold">
                     {userProfile?.username}
                   </h1>
+                  {isOwnProfile &&
+                  (userProfile?.role == "owner" ||
+                    userProfile?.role == "admin") ? (
+                    <Link href={"/admin-panel"}>
+                      <Button variant={"secondary"} className="cursor-pointer">
+                        Admin Panel
+                      </Button>
+                    </Link>
+                  ) : (
+                    ""
+                  )}
                   {isOwnProfile && (
                     <Link href={"/edit-profile"}>
                       <Button variant={"secondary"} className="cursor-pointer">

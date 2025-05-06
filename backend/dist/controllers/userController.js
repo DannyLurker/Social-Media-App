@@ -198,15 +198,47 @@ export const deleteUserAccount = catchAsync((req, res, next) => __awaiter(void 0
     if ((userAccount === null || userAccount === void 0 ? void 0 : userAccount.role) !== "admin" && (userAccount === null || userAccount === void 0 ? void 0 : userAccount.role) !== "owner") {
         return next(new AppError("You're not authorized to delete others account", 403));
     }
+    const userPost = yield Post.find({ user: targettedUserAccount === null || targettedUserAccount === void 0 ? void 0 : targettedUserAccount._id });
+    const userPostIds = userPost.map((userPost) => userPost === null || userPost === void 0 ? void 0 : userPost._id);
+    yield User.updateMany({}, {
+        $pull: {
+            followers: targettedUserAccount === null || targettedUserAccount === void 0 ? void 0 : targettedUserAccount._id,
+            following: targettedUserAccount === null || targettedUserAccount === void 0 ? void 0 : targettedUserAccount._id,
+            savedPosts: { $in: userPostIds },
+        },
+    });
+    // Kenapa pada pull likes tidak perlu dibuat kedalam array seperti userCommentIds ? Karena pada likes, user hanya bisa memberikan satu like pada setiap postingan, jadi idnya hanya akan ada satu, berbeda dengan comment yang dapat di berikan secara banyak, maka akan ada lebih dari satu id yang jadi perlu dilakukan .find terlebih dahulu baru di map, dan terakhir dilakukan ini { $in: userCommentIds }
+    const userComments = yield Comment.find({ user: targettedUserAccount === null || targettedUserAccount === void 0 ? void 0 : targettedUserAccount._id });
+    const userCommentIds = userComments.map((c) => c._id);
     yield Post.updateMany({}, {
         $pull: {
             likes: targettedUserAccount === null || targettedUserAccount === void 0 ? void 0 : targettedUserAccount._id,
-            comments: targettedUserAccount === null || targettedUserAccount === void 0 ? void 0 : targettedUserAccount._id,
+            comments: { $in: userCommentIds },
         },
     });
+    // Kenapa menggunakan flatMap ? jika menggunakan map dengan code seperti ini
+    // const ids = userPost.map(post => post.comments.map(c => c._id));
+    // akan menghasilkan hasil seperti ini :
+    //    [
+    //   [id1, id2],   // dari post 1
+    //   [id3],        // dari post 2
+    //   [id4, id5, id6], // dari post 3
+    //   ...
+    // ]
+    //Jika menggunakan flatMap, dengan code seperti ini :
+    // const ids = userPost.flatMap(post => post.comments.map(c => c._id));
+    // Hasilnya akan seperti ini :
+    // [id1, id2, id3, id4, id5, id6, ...]
+    const userPostCommentsIds = userPost.flatMap((userPost) => Array.isArray(userPost === null || userPost === void 0 ? void 0 : userPost.comments)
+        ? userPost.comments.map((comment) => comment === null || comment === void 0 ? void 0 : comment._id)
+        : []);
     yield Post.deleteMany({ user: targettedUserAccount === null || targettedUserAccount === void 0 ? void 0 : targettedUserAccount._id });
-    yield Comment.deleteMany({ user: targettedUserAccount === null || targettedUserAccount === void 0 ? void 0 : targettedUserAccount._id });
+    yield Comment.deleteMany({
+        user: targettedUserAccount === null || targettedUserAccount === void 0 ? void 0 : targettedUserAccount._id,
+        _id: { $in: userPostCommentsIds },
+    });
     const userPosts = yield Post.find({ user: targettedUserAccount === null || targettedUserAccount === void 0 ? void 0 : targettedUserAccount._id });
+    console.log(userPosts);
     for (const post of userPosts) {
         if ((_a = post.image) === null || _a === void 0 ? void 0 : _a.publicId) {
             try {

@@ -42,18 +42,6 @@ const UserSettingsButton = ({ user }: Props) => {
     }
   };
 
-  const handdleDeleteUserAccount = async (id: string) => {
-    const result = await axios.delete(
-      `${BASE_API_URL}/users/delete-account/${id}`,
-      { withCredentials: true }
-    );
-
-    if (result) {
-      toast.success(result.data.message);
-      location.reload();
-    }
-  };
-
   return (
     <>
       <div className="relative">
@@ -94,7 +82,7 @@ const UserSettingsButton = ({ user }: Props) => {
                 <p className="text-center font-bold">Owner Account</p>
               ) : user.role == "admin" ? (
                 <Button
-                  onClick={() => handdleDeleteUserAccount(user._id)}
+                  onClick={() => setIsOpen(true)}
                   className="w-fit"
                   variant={"destructive"}
                 >
@@ -102,7 +90,7 @@ const UserSettingsButton = ({ user }: Props) => {
                 </Button>
               ) : user.role == "user" ? (
                 <Button
-                  onClick={() => handdleDeleteUserAccount(user._id)}
+                  onClick={() => setIsOpen(true)}
                   className="w-fit"
                   variant={"destructive"}
                 >
