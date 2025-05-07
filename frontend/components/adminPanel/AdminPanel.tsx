@@ -58,11 +58,13 @@ const AdminPanel = () => {
     findUser();
   }, [searchValue]);
 
-  if (user?.role !== "admin" && user?.role !== "owner") {
-    toast.error("You're not authorized");
-    router.push("/");
-    return;
-  }
+  // React tidak mengizinkan update state/router saat proses render. Jadi if statement dalam pengecekan apakah user berhak memasuki admin-panel atau tidak, harus lah berada di dalam useEffect
+  useEffect(() => {
+    if (user && user.role !== "admin" && user.role !== "owner") {
+      toast.error("You're not authorized");
+      router.push("/");
+    }
+  }, [user, router]);
 
   return (
     <>
@@ -131,7 +133,10 @@ const AdminPanel = () => {
                               </p>
                             </div>
                           </div>
-                          <UserSettingsButton user={user} />
+                          <UserSettingsButton
+                            user={user}
+                            labelClassName="cursor-pointer"
+                          />
                         </div>
                       </div>
                     );

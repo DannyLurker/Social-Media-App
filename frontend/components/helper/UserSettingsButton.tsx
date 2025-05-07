@@ -17,9 +17,10 @@ import DeleteUserDialog from "./DeleteUserDialog";
 
 type Props = {
   user: User;
+  labelClassName?: string;
 };
 
-const UserSettingsButton = ({ user }: Props) => {
+const UserSettingsButton = ({ user, labelClassName }: Props) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
@@ -44,10 +45,10 @@ const UserSettingsButton = ({ user }: Props) => {
 
   return (
     <>
-      <div className="relative">
+      <div className={`relative`}>
         <Dialog>
           <DialogTrigger>
-            <Settings />
+            <Settings className={`${labelClassName}`} />
           </DialogTrigger>
           <DialogContent>
             <DialogTitle>
@@ -64,14 +65,14 @@ const UserSettingsButton = ({ user }: Props) => {
               ) : user.role == "admin" ? (
                 <Button
                   onClick={() => handleChangeAdmin(user._id)}
-                  className="w-fit"
+                  className="w-fit cursor-pointer"
                 >
                   User
                 </Button>
               ) : user.role == "user" ? (
                 <Button
                   onClick={() => handleChangeAdmin(user._id)}
-                  className="w-fit"
+                  className="w-fit cursor-pointer"
                 >
                   Admin
                 </Button>
@@ -83,7 +84,7 @@ const UserSettingsButton = ({ user }: Props) => {
               ) : user.role == "admin" ? (
                 <Button
                   onClick={() => setIsOpen(true)}
-                  className="w-fit"
+                  className="w-fit cursor-pointer"
                   variant={"destructive"}
                 >
                   Delete Account
@@ -91,7 +92,7 @@ const UserSettingsButton = ({ user }: Props) => {
               ) : user.role == "user" ? (
                 <Button
                   onClick={() => setIsOpen(true)}
-                  className="w-fit"
+                  className="w-fit cursor-pointer"
                   variant={"destructive"}
                 >
                   Delete Account

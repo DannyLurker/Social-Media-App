@@ -48,25 +48,29 @@ const DeleteUserDialog = ({ user, isOpen, onOpenChange }: Props) => {
                 <Loader className="animate-spin w-10 h-10 text-gray-700" />
               </div>
             )}
-            <div className="flex justify-center">
+            <div className="flex justify-center ">
               {user.role == "owner" ? (
                 ""
               ) : user.role == "admin" ? (
-                <Button
-                  onClick={() => handdleDeleteUserAccount(user._id)}
-                  className="w-fit"
-                  variant={"destructive"}
-                >
-                  Delete "{user.username}"
-                </Button>
+                <div className="cursor-pointer">
+                  <Button
+                    onClick={() => handdleDeleteUserAccount(user._id)}
+                    className="w-fit"
+                    variant={"destructive"}
+                  >
+                    Delete "{user.username}"
+                  </Button>
+                </div>
               ) : user.role == "user" ? (
-                <Button
-                  onClick={() => handdleDeleteUserAccount(user._id)}
-                  className="w-fit"
-                  variant={"destructive"}
-                >
-                  Delete "{user.username}"
-                </Button>
+                <div className="cursor-pointer">
+                  <Button
+                    onClick={() => handdleDeleteUserAccount(user._id)}
+                    className="w-fit"
+                    variant={"destructive"}
+                  >
+                    Delete "{user.username}"
+                  </Button>
+                </div>
               ) : (
                 ""
               )}

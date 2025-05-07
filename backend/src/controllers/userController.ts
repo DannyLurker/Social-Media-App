@@ -297,10 +297,11 @@ export const deleteUserAccount = catchAsync(async (req, res, next) => {
       : []
   );
 
-  await Post.deleteMany({ user: targettedUserAccount?._id });
-
   await Comment.deleteMany({
     user: targettedUserAccount?._id,
+  });
+
+  await Comment.deleteMany({
     _id: { $in: userPostCommentsIds },
   });
 
@@ -316,6 +317,8 @@ export const deleteUserAccount = catchAsync(async (req, res, next) => {
       }
     }
   }
+
+  await Post.deleteMany({ user: targettedUserAccount?._id });
 
   if (
     targettedUserAccount?.profilePicture &&

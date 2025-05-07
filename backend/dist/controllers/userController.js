@@ -232,9 +232,10 @@ export const deleteUserAccount = catchAsync((req, res, next) => __awaiter(void 0
     const userPostCommentsIds = userPost.flatMap((userPost) => Array.isArray(userPost === null || userPost === void 0 ? void 0 : userPost.comments)
         ? userPost.comments.map((comment) => comment === null || comment === void 0 ? void 0 : comment._id)
         : []);
-    yield Post.deleteMany({ user: targettedUserAccount === null || targettedUserAccount === void 0 ? void 0 : targettedUserAccount._id });
     yield Comment.deleteMany({
         user: targettedUserAccount === null || targettedUserAccount === void 0 ? void 0 : targettedUserAccount._id,
+    });
+    yield Comment.deleteMany({
         _id: { $in: userPostCommentsIds },
     });
     const userPosts = yield Post.find({ user: targettedUserAccount === null || targettedUserAccount === void 0 ? void 0 : targettedUserAccount._id });
@@ -249,6 +250,7 @@ export const deleteUserAccount = catchAsync((req, res, next) => __awaiter(void 0
             }
         }
     }
+    yield Post.deleteMany({ user: targettedUserAccount === null || targettedUserAccount === void 0 ? void 0 : targettedUserAccount._id });
     if ((targettedUserAccount === null || targettedUserAccount === void 0 ? void 0 : targettedUserAccount.profilePicture) &&
         typeof targettedUserAccount.profilePicture.publicId === "string") {
         try {

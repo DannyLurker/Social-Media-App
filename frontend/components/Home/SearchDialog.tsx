@@ -92,7 +92,7 @@ const SearchDialog = ({ isOpen, onClose }: Props) => {
                           }
                         >
                           <AvatarImage
-                            src={`${user?.profilePicture}`}
+                            src={`${user?.profilePicture?.url}`}
                             className="h-full w-full rounded-full"
                           />
                           <AvatarFallback>
