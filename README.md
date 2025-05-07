@@ -87,3 +87,71 @@
 - Notifications: Sonner (toast notifications)
 
 - UI Components: Radix UI (for dialogs, avatars, etc.)
+
+## 🚀 Getting Started
+
+Follow these steps to run the Nexora project locally:
+
+1. Install Dependencies
+   Navigate into each project folder and install the required dependencies:
+
+```javascript
+cd .\backend\
+npm install
+```
+
+```javascript
+cd .\frontend\
+npm install
+```
+
+2. Create Environment Variable Files
+   Backend Create a .env file inside the backend folder. Example contents:
+
+```javascript
+MONGODB_URI= your_mongodb_uri
+JWT_SECRET=your_jwt_secret
+JWT_EXPIRES_IN=90d
+CLOUDINARY_CLOUD_NAME=your_cloudinary_name
+CLOUDINARY_API_KEY=your_cloudinary_api_key
+CLOUDINARY_API_SECRET=your_cloudinary_api_secret
+EMAIL_USER=your_email@gmail.com
+EMAIL_PASS=your_email_password
+```
+
+Frontend Create a .env file inside the frontend folder. Example contents:
+
+```javascript
+NEXT_PUBLIC_BACKEND_API=http://localhost:
+```
+
+3. Start MongoDB
+   Ensure MongoDB is running on your local machine, or connect using MongoDB Atlas.
+
+4. Run the Backend
+   Start the backend server:
+
+```javascript
+cd backend
+npm run dev
+```
+
+Or if you prefer **yarn**:
+
+```javascript
+yarn dev
+```
+
+5. Run the Frontend
+   Start the frontend development server:
+
+```javascript
+cd frontend
+npm run dev
+```
+
+Or if you prefer **yarn**:
+
+```javascript
+yarn dev
+```
