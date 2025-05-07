@@ -306,7 +306,6 @@ export const deleteUserAccount = catchAsync(async (req, res, next) => {
   });
 
   const userPosts = await Post.find({ user: targettedUserAccount?._id });
-  console.log(userPosts);
 
   for (const post of userPosts) {
     if (post.image?.publicId) {

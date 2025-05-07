@@ -239,7 +239,6 @@ export const deleteUserAccount = catchAsync((req, res, next) => __awaiter(void 0
         _id: { $in: userPostCommentsIds },
     });
     const userPosts = yield Post.find({ user: targettedUserAccount === null || targettedUserAccount === void 0 ? void 0 : targettedUserAccount._id });
-    console.log(userPosts);
     for (const post of userPosts) {
         if ((_a = post.image) === null || _a === void 0 ? void 0 : _a.publicId) {
             try {
