@@ -2,7 +2,7 @@
 
 ## Disclaimer
 
-- This Project created by watehed youtube tutorials. Here's Youtube Tutorial link: https://youtu.be/6XF_uhF4axg?si=-C_GViWdJj7MoqQV
+- This Project created by watched A YouTube tutorial, Special thanks to WebDevWarriors for their excellent guidance and content. Here's Youtube Tutorial link: https://youtu.be/6XF_uhF4axg?si=-C_GViWdJj7MoqQV
 
 # Nexora
 
